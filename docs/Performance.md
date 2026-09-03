@@ -1,37 +1,37 @@
 # Performance
 
-## A bomba de refresh
+## The refresh pump
 
-Isto não é otimização, é a condição para qualquer coisa aparecer. Leia antes de mexer no loop.
+This is not an optimisation, it is the condition for anything appearing at all. Read it before touching the loop.
 
 ```vba
 timerShp.TextEffect.Text = m_statText & "  " & Format$(Timer, "0.00")
 DoEvents
 ```
 
-Escrever num WordArt é o que força o PowerPoint a repintar o slide durante uma apresentação, e o repintar é como o frame se torna visível. Pule isso, ou escreva a mesma string duas vezes seguidas, e a imagem para de atualizar mesmo com a engine rodando normalmente.
+Writing to a WordArt is what forces PowerPoint to repaint the slide during a show, and the repaint is how the frame becomes visible. Skip it, or write the same string twice in a row, and the picture stops updating even though the engine keeps running.
 
-Três consequências:
+Three consequences:
 
-1. **Tem que disparar todo frame.** Não dá para limitar a cada 100 ms.
-2. **O valor tem que mudar de verdade.** Por isso o relógio cru vai concatenado no fim do texto: ele garante que a string seja diferente.
-3. **`DoEvents` é onde o repintar acontece.** Sem ele o pedido fica na fila.
+1. **It has to fire every frame.** It cannot be throttled to every 100 ms.
+2. **The value has to actually change.** That is why the raw clock is appended to the text: it guarantees the string differs.
+3. **`DoEvents` is where the repaint happens.** Without it the request sits in the queue.
 
-A bomba e o `DoEvents` são medidos juntos como um balde só, porque são um evento só: a escrita pede o repintar e o `DoEvents` é onde ele ocorre.
+The pump and the `DoEvents` are timed together as one bucket, because they are one event: the write asks PowerPoint to repaint and the `DoEvents` is where it gets to.
 
-## Duplo buffer
+## Double buffering
 
-O PowerPoint não tem `ScreenUpdating`, então não dá para congelar a tela enquanto se desenha. O que dá para fazer é nunca deixar a tela vazia.
+PowerPoint has no screen updating switch, so the screen cannot be frozen while drawing. What can be done is never leaving it empty.
 
-O renderer mantém dois bancos de nomes de shape. As shapes do frame novo entram com nomes de um banco enquanto as do frame anterior ainda estão na tela com nomes do outro. No `EndFrame` o banco velho é apagado numa chamada só:
+The renderer keeps two banks of shape names. The new frame's shapes go in with names from one bank while the previous frame is still on screen with names from the other. At `EndFrame` the old bank is deleted in a single call:
 
 ```vba
-target.Range(nomesDoBancoVelho).Delete
+target.Range(oldBankNames).Delete
 ```
 
-Uma chamada de COM para apagar cento e quarenta shapes, em vez de cento e quarenta.
+One COM call to delete a hundred and forty shapes, instead of a hundred and forty.
 
-## Orçamento de polígonos
+## Polygon budget
 
 ```vba
 rd.SetBudgetRange 120, 150
@@ -39,21 +39,23 @@ rd.PolyBudget = 140
 rd.AutoBudget = False
 ```
 
-`AdaptBudget dt` sobe o teto devagar, mais 2, quando o frame vem rápido, e derruba rápido, menos 8, quando atrasa. A histerese é assimétrica de propósito: são precisos três frames lentos seguidos para encolher e dez rápidos para crescer, senão o orçamento oscila e a geometria do fundo pisca.
+`AdaptBudget dt` raises the ceiling slowly, by 2, when frames come in fast, and drops it quickly, by 8, when they run late. The hysteresis is asymmetric on purpose: three slow frames in a row are needed to shrink and ten fast ones to grow, otherwise the budget oscillates and background geometry flickers.
 
-**Para uma cena de tamanho conhecido, fixe.** Se o pior caso, com tudo na tela ao mesmo tempo, custa 100 polígonos, fixar em 140 significa que a lista de desenho nunca é cortada, e um corte que nunca acontece é um corte que nunca pode piscar.
+**For a scene of known size, pin it.** If the worst case, with everything on screen at once, costs 100 polygons, pinning at 140 means the draw list is never cut, and a cut that never happens is a cut that can never flicker.
 
-`AutoBudget` serve para cena grande demais para qualquer número fixo, onde trocar geometria distante por frame rate é o negócio certo.
+`AutoBudget` is for a scene too large for any fixed number, where trading distant geometry for frame rate is the right deal.
 
-## Nada é lido de volta das shapes
+The selection has hysteresis of its own: an object already on screen may overspend by a small margin rather than vanish. Without it, an object sitting on the budget line is cut on one frame and drawn on the next. Measured with a deliberately tight budget, fourteen disappearances over four hundred frames became none.
 
-Regra da lib: o caminho por frame nunca consulta uma propriedade de shape. Objeto COM é caro de interrogar, e tudo que precisaríamos perguntar já é nosso: posição, tamanho, cor, ângulo, tudo vive em array.
+## Nothing is read back from the shapes
 
-Auditado: as únicas leituras de shape em toda a engine são `PRenderer.Purge` e `PCanvas.FindShape`, e as duas só rodam no boot. Nem o `PScene`, nem o `PMaterials`, nem as primitivas do `PRenderer` tocam numa shape.
+A rule of the library: the per frame path never queries a shape property. A COM object is expensive to interrogate, and everything we would ask about is already ours: position, size, colour, angle, all of it lives in an array.
 
-## Frame que não mudou
+Audited: the only shape reads in the whole engine are `PRenderer.Purge` and `PCanvas.FindShape`, and both run only at boot. Neither `PScene`, nor `PMaterials`, nor the renderer's primitives ever touch a shape.
 
-Um corpo que terminou o frame onde começou não muda nada na tela. O demo mantém um flag:
+## A frame that did not change
+
+A body that ended the frame where it started changes nothing on screen. The demo keeps a flag:
 
 ```vba
 If m_dirty Then
@@ -64,33 +66,33 @@ If m_dirty Then
 End If
 ```
 
-Pular o frame pula toda chamada de COM dentro dele: nada de apagar, nada de `AddPolyline`, nada de preencher. Um jogador parado custa zero, que é a otimização mais barata que existe aqui.
+Skipping the frame skips every COM call in it: no delete, no `AddPolyline`, no fill. A player standing still costs nothing, which is the cheapest optimisation available here.
 
-Cuidado: a bomba de refresh **não** entra nesse `If`. Ela roda sempre.
+Careful: the refresh pump does **not** go inside that `If`. It runs always.
 
-## Sombreamento pré-calculado
+## Precomputed shading
 
-A cor de uma face é material vezes direção vezes faixa de névoa, e isso é uma tabela, não uma conta. `PMaterials.ShadeBand` é duas checagens de limite e uma leitura de array.
+The colour of a face is material times direction times fog band, and that is a table, not a calculation. `PMaterials.ShadeBand` is two bounds checks and one array read.
 
-Só faces alinhadas aos eixos usam a tabela. Rampa cai no caminho lento, que é o preço de ela poder apontar para qualquer lado.
+Only axis aligned faces use the table. A ramp falls to the slow path, which is the price of being able to point anywhere.
 
-## Medindo de verdade
+## Measuring properly
 
 ```vba
 rd.Profiling = True
-rd.DryRun = True        ' roda tudo sem tocar em shape nenhuma
+rd.DryRun = True        ' runs everything without touching a shape
 ```
 
-Com `DryRun` ligado você mede só o seu código. A diferença entre o tempo com e sem `DryRun` é o que o PowerPoint cobra, e essa é a conta que decide onde vale otimizar.
+With `DryRun` on you are measuring only your own code. The difference between the time with and without it is what PowerPoint charges, and that is the number that decides where optimising is worth anything.
 
-O demo mostra os três números na barra de status: `render`, `com` e `doevents`. Se `doevents` domina, encolher o pipeline não move nada e a alavanca é quanto o repintar tem que desenhar.
+The demo prints three of them on the status bar: `render`, `com` and `doevents`. If `doevents` dominates, shrinking the pipeline moves nothing and the lever is how much the repaint has to draw.
 
-## Nível de detalhe
+## Level of detail
 
-`sc.LodSize = 44` faz uma caixa cujo diâmetro projetado ficou abaixo de 44 pontos desenhar só a face mais visível. Uma caixa mostra no máximo três faces, e as duas menores viram tiras finas muito antes da dominante.
+`sc.LodSize = 44` makes a box whose projected diameter has fallen below 44 points draw only its most visible face. A box shows at most three faces, and the two minor ones become slivers long before the dominant one does.
 
-Sobe o número para comprar frame rate, desce para comprar silhueta.
+Raise the number to buy frame rate, lower it to buy silhouette. The threshold has hysteresis, so an object drifting across it does not flip on alternate frames.
 
-## Índice espacial
+## Spatial index
 
-Consultas de física passam por uma grade uniforme. Veja [Índice espacial](Indice-espacial.md).
+Physics queries go through a uniform grid. See [Spatial index](Spatial-Index.md).

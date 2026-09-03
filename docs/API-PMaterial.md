@@ -1,14 +1,14 @@
 # PMaterial
 
-**Uma superficie**
+**One surface**
 
 A single surface description shared by the renderer and the physics layer: what the surface looks like, and whether a body can walk on it, fall through it or pass straight through. One material is meant to be authored once and referenced by many faces through its registry id.
 
 > Every property setter that affects shading notifies PMaterials so cached shading tables are rebuilt on the next draw.
 
-> **Escopo.** Private to this VBA project: class modules carry VB_Exposed = False, which is the class level equivalent of Option Private Module.
+> **Scope.** Private to this VBA project: class modules carry VB_Exposed = False, which is the class level equivalent of Option Private Module.
 
-## Indice
+## Index
 
 **Identity.** [`Id`](#id), [`Name`](#name), [`Tag`](#tag)
 
@@ -18,7 +18,7 @@ A single surface description shared by the renderer and the physics layer: what 
 
 **Copying.** [`CopyFrom`](#copyfrom), [`Clone`](#clone), [`Describe`](#describe)
 
-## Membros
+## Members
 
 ### Id
 
@@ -28,7 +28,7 @@ Public Property Get Id() As Long
 
 Reads the registry id assigned to this material.
 
-**Devolve.** The id, or P_INVALID_ID while the material is unregistered.
+**Returns.** The id, or P_INVALID_ID while the material is unregistered.
 
 ### Name
 
@@ -39,13 +39,13 @@ Public Property Let Name(ByVal value As String)
 
 Reads the lookup name of the material.
 
-Escrita: Sets the lookup name of the material.
+**Write.** Sets the lookup name of the material.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `value` | The new name. |
 
-**Devolve.** The name used as the registry key.
+**Returns.** The name used as the registry key.
 
 > Renaming a material already held by the registry does not move its key; use PMaterials.Rename instead.
 
@@ -58,13 +58,13 @@ Public Property Let Tag(ByVal value As String)
 
 Reads the free form payload attached to this material.
 
-Escrita: Attaches a free form payload to this material, such as a sound name or a gameplay flag.
+**Write.** Attaches a free form payload to this material, such as a sound name or a gameplay flag.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `value` | The caller defined tag. |
 
-**Devolve.** The caller defined tag.
+**Returns.** The caller defined tag.
 
 ### Color
 
@@ -75,13 +75,13 @@ Public Property Let Color(ByVal value As Long)
 
 Reads the unlit base colour of the surface.
 
-Escrita: Sets the unlit base colour of the surface.
+**Write.** Sets the unlit base colour of the surface.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `value` | The packed colour, as produced by PCore.ColorPack. |
 
-**Devolve.** The packed colour.
+**Returns.** The packed colour.
 
 ### Unlit
 
@@ -92,13 +92,13 @@ Public Property Let Unlit(ByVal value As Boolean)
 
 Reports whether the surface ignores the directional light.
 
-Escrita: Chooses whether the surface ignores the directional light.
+**Write.** Chooses whether the surface ignores the directional light.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `value` | True to skip shading, which suits coins, HUD panels and emissive props. |
 
-**Devolve.** True when the material renders at full brightness.
+**Returns.** True when the material renders at full brightness.
 
 ### Fogged
 
@@ -109,13 +109,13 @@ Public Property Let Fogged(ByVal value As Boolean)
 
 Reports whether distance fog is applied to the surface.
 
-Escrita: Chooses whether distance fog is applied to the surface.
+**Write.** Chooses whether distance fog is applied to the surface.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `value` | True to fade with depth, False to keep the colour constant at any distance. |
 
-**Devolve.** True when the material fades into the fog colour.
+**Returns.** True when the material fades into the fog colour.
 
 ### Visible
 
@@ -126,13 +126,13 @@ Public Property Let Visible(ByVal value As Boolean)
 
 Reports whether the surface is drawn at all.
 
-Escrita: Chooses whether the surface is drawn at all.
+**Write.** Chooses whether the surface is drawn at all.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `value` | False to build an invisible collider that still blocks movement. |
 
-**Devolve.** True when the material produces geometry.
+**Returns.** True when the material produces geometry.
 
 ### TwoSided
 
@@ -143,13 +143,13 @@ Public Property Let TwoSided(ByVal value As Boolean)
 
 Reports whether both sides of a face are drawn.
 
-Escrita: Chooses whether both sides of a face are drawn.
+**Write.** Chooses whether both sides of a face are drawn.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `value` | True for flat props such as flags and billboards, which have no inside. |
 
-**Devolve.** True when backface culling is skipped.
+**Returns.** True when backface culling is skipped.
 
 ### Transparency
 
@@ -160,13 +160,13 @@ Public Property Let Transparency(ByVal value As Single)
 
 Reads how see-through the surface is.
 
-Escrita: Sets how see-through the surface is.
+**Write.** Sets how see-through the surface is.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `value` | The transparency, from 0 for opaque to 1 for invisible. |
 
-**Devolve.** The transparency, from 0 for opaque to 1 for invisible.
+**Returns.** The transparency, from 0 for opaque to 1 for invisible.
 
 > Any value above zero forces the renderer onto a slower path, since the fill has to be formatted per shape.
 
@@ -179,13 +179,13 @@ Public Property Let EdgeVisible(ByVal value As Boolean)
 
 Reports whether faces are outlined.
 
-Escrita: Chooses whether faces are outlined, which is useful for wireframe and toon looks.
+**Write.** Chooses whether faces are outlined, which is useful for wireframe and toon looks.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `value` | True to draw the outline. |
 
-**Devolve.** True when the shape outline is drawn.
+**Returns.** True when the shape outline is drawn.
 
 ### EdgeColor
 
@@ -196,13 +196,13 @@ Public Property Let EdgeColor(ByVal value As Long)
 
 Reads the outline colour.
 
-Escrita: Sets the outline colour.
+**Write.** Sets the outline colour.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `value` | The packed colour. |
 
-**Devolve.** The packed colour.
+**Returns.** The packed colour.
 
 ### EdgeWeight
 
@@ -213,13 +213,13 @@ Public Property Let EdgeWeight(ByVal value As Single)
 
 Reads the outline thickness.
 
-Escrita: Sets the outline thickness.
+**Write.** Sets the outline thickness.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `value` | The weight in points. |
 
-**Devolve.** The weight in points.
+**Returns.** The weight in points.
 
 ### NeedsShapeFormat
 
@@ -229,7 +229,7 @@ Public Property Get NeedsShapeFormat() As Boolean
 
 Reports whether the renderer must format each emitted shape individually.
 
-**Devolve.** True when transparency or outlines are in play.
+**Returns.** True when transparency or outlines are in play.
 
 > Materials that answer False are drawn through the fast path, which only assigns a fill colour.
 
@@ -242,13 +242,13 @@ Public Property Let Collision(ByVal value As PCollision)
 
 Reads how the surface answers collision queries.
 
-Escrita: Sets how the surface answers collision queries.
+**Write.** Sets how the surface answers collision queries.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `value` | pcGhost to let bodies pass, pcSolid to block from every side, pcOneWay to block only a landing from above, or pcTrigger to report the overlap without blocking. |
 
-**Devolve.** The PCollision mode.
+**Returns.** The PCollision mode.
 
 ### IsSolid
 
@@ -258,7 +258,7 @@ Public Property Get IsSolid() As Boolean
 
 Reports whether bodies are stopped from every direction.
 
-**Devolve.** True for pcSolid materials.
+**Returns.** True for pcSolid materials.
 
 ### IsGhost
 
@@ -268,7 +268,7 @@ Public Property Get IsGhost() As Boolean
 
 Reports whether bodies pass straight through with no notification.
 
-**Devolve.** True for pcGhost materials.
+**Returns.** True for pcGhost materials.
 
 ### IsOneWay
 
@@ -278,7 +278,7 @@ Public Property Get IsOneWay() As Boolean
 
 Reports whether the surface can only be landed on from above.
 
-**Devolve.** True for pcOneWay materials.
+**Returns.** True for pcOneWay materials.
 
 ### IsTrigger
 
@@ -288,7 +288,7 @@ Public Property Get IsTrigger() As Boolean
 
 Reports whether the surface only signals overlaps, as pickups and hazard volumes do.
 
-**Devolve.** True for pcTrigger materials.
+**Returns.** True for pcTrigger materials.
 
 ### BlocksMovement
 
@@ -298,11 +298,11 @@ Public Function BlocksMovement(Optional ByVal landingFromAbove As Boolean = Fals
 
 Answers the core physics question: does this surface stop the body that just touched it?
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `landingFromAbove` | True when the body is descending onto the top face of the surface. |
 
-**Devolve.** True when the motion must be resolved instead of ignored.
+**Returns.** True when the motion must be resolved instead of ignored.
 
 ### Friction
 
@@ -313,13 +313,13 @@ Public Property Let Friction(ByVal value As Single)
 
 Reads how strongly the surface slows a body sliding across it.
 
-Escrita: Sets how strongly the surface slows a body sliding across it.
+**Write.** Sets how strongly the surface slows a body sliding across it.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `value` | The friction multiplier, clamped to zero or above. |
 
-**Devolve.** The friction multiplier; 1 is the engine default, lower values feel like ice.
+**Returns.** The friction multiplier; 1 is the engine default, lower values feel like ice.
 
 ### Bounce
 
@@ -330,13 +330,13 @@ Public Property Let Bounce(ByVal value As Single)
 
 Reads how much vertical speed a landing body keeps.
 
-Escrita: Sets how much vertical speed a landing body keeps, turning the surface into a trampoline.
+**Write.** Sets how much vertical speed a landing body keeps, turning the surface into a trampoline.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `value` | The restitution, clamped to zero or above. |
 
-**Devolve.** The restitution; 0 absorbs the impact, 1 bounces back at full speed.
+**Returns.** The restitution; 0 absorbs the impact, 1 bounces back at full speed.
 
 ### SpeedMultiplier
 
@@ -347,13 +347,13 @@ Public Property Let SpeedMultiplier(ByVal value As Single)
 
 Reads the walking speed multiplier applied while standing on the surface.
 
-Escrita: Sets the walking speed multiplier applied while standing on the surface, for mud or conveyors.
+**Write.** Sets the walking speed multiplier applied while standing on the surface, for mud or conveyors.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `value` | The multiplier, clamped to zero or above. |
 
-**Devolve.** The multiplier; 1 is normal speed.
+**Returns.** The multiplier; 1 is normal speed.
 
 ### DamagePerSecond
 
@@ -364,13 +364,13 @@ Public Property Let DamagePerSecond(ByVal value As Single)
 
 Reads the damage dealt per second of contact.
 
-Escrita: Sets the damage dealt per second of contact, which is how lava and spikes are described.
+**Write.** Sets the damage dealt per second of contact, which is how lava and spikes are described.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `value` | The damage rate. |
 
-**Devolve.** The damage rate; zero for a harmless surface.
+**Returns.** The damage rate; zero for a harmless surface.
 
 ### Climbable
 
@@ -381,13 +381,13 @@ Public Property Let Climbable(ByVal value As Boolean)
 
 Reports whether a body may climb the vertical faces of the surface.
 
-Escrita: Chooses whether a body may climb the vertical faces of the surface.
+**Write.** Chooses whether a body may climb the vertical faces of the surface.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `value` | True to allow climbing. |
 
-**Devolve.** True for ladders and similar geometry.
+**Returns.** True for ladders and similar geometry.
 
 ### StepHeight
 
@@ -398,13 +398,13 @@ Public Property Let StepHeight(ByVal value As Single)
 
 Reads the tallest lip a walking body steps over instead of colliding with.
 
-Escrita: Sets the tallest lip a walking body steps over instead of colliding with.
+**Write.** Sets the tallest lip a walking body steps over instead of colliding with.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `value` | The step height in world units; zero, the default, means the body decides. |
 
-**Devolve.** The step height in world units, or zero to leave the decision to the body.
+**Returns.** The step height in world units, or zero to leave the decision to the body.
 
 This is what separates a kerb from a cliff when both are the same shape. A material that names a height overrides whatever the body would have allowed, so a low wall can be made unclimbable and a tall stair can be made walkable without either of them changing size.
 
@@ -417,13 +417,13 @@ Public Property Let Buoyancy(ByVal value As Single)
 
 Reads how strongly the surface holds a body up against gravity.
 
-Escrita: Turns the material into a fluid a body can be inside of.
+**Write.** Turns the material into a fluid a body can be inside of.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `value` | How much of gravity the fluid cancels: 0 leaves the body falling normally, 1 makes it float in place, above 1 pushes it to the surface. |
 
-**Devolve.** The fraction of gravity cancelled while submerged; zero for anything that is not a fluid.
+**Returns.** The fraction of gravity cancelled while submerged; zero for anything that is not a fluid.
 
 > Read together with Collision. A fluid is a trigger, because it must be entered rather than landed on, and it is the buoyancy that tells the physics this particular trigger is something to swim in rather than a coin to pick up.
 
@@ -436,13 +436,13 @@ Public Property Let Drag(ByVal value As Single)
 
 Reads how quickly the material bleeds off the speed of a body inside it.
 
-Escrita: Sets how quickly the material bleeds off the speed of a body inside it.
+**Write.** Sets how quickly the material bleeds off the speed of a body inside it.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `value` | The damping in units per second; this is what makes water feel thick and a jump land softly. |
 
-**Devolve.** The damping in units per second.
+**Returns.** The damping in units per second.
 
 ### IsFluid
 
@@ -452,7 +452,7 @@ Public Property Get IsFluid() As Boolean
 
 Reports whether the material is something a body can be immersed in.
 
-**Devolve.** True for a trigger that carries buoyancy.
+**Returns.** True for a trigger that carries buoyancy.
 
 ### CopyFrom
 
@@ -462,7 +462,7 @@ Public Sub CopyFrom(ByVal src As PMaterial)
 
 Overwrites this material with the settings of another, leaving the registry id alone.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `src` | The material to copy from. |
 
@@ -474,11 +474,11 @@ Public Function Clone(Optional ByVal newName As String = vbNullString) As PMater
 
 Produces an unregistered copy of this material.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `newName` | The name to give the copy; the source name is reused when omitted. |
 
-**Devolve.** The cloned material, ready to be handed to PMaterials.Add.
+**Returns.** The cloned material, ready to be handed to PMaterials.Add.
 
 ### Describe
 
@@ -488,11 +488,11 @@ Public Function Describe() As String
 
 Renders the material as readable text for logging and debugging.
 
-**Devolve.** A one line summary of the identity, colour and collision mode.
+**Returns.** A one line summary of the identity, colour and collision mode.
 
-## Membros `Friend`
+## `Friend` members
 
-Visiveis para o projeto VBA inteiro, mas nao para fora dele. Um membro publico de classe nao pode receber um tipo declarado em modulo padrao, e e por isso que estes sao `Friend` em vez de `Public`.
+Visible to the whole VBA project but not outside it. A public member of a class cannot take a type declared in a standard module, which is why these are `Friend` rather than `Public`.
 
 ### Id
 

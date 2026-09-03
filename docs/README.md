@@ -1,57 +1,57 @@
 # Psu3D
 
-Motor 3D escrito em VBA puro, rodando dentro do PowerPoint.
+A 3D engine written in pure VBA, running inside PowerPoint.
 
-Psu3D não é uma engine de jogo. É um motor 3D que serve para fazer jogo, do mesmo jeito que o three.js serve. O núcleo (canvas, câmera, renderer, cena, material, luz) não conhece a palavra "jogador", "vida" nem "fase". Quem quer terreno, gráfico de barras, visualização de dados ou uma figura 3D num slide usa o mesmo núcleo e nunca importa a física.
+Psu3D is not a game engine. It is a 3D engine that games can be built on, in the same sense that three.js is. The core, meaning canvas, camera, renderer, scene, material and light, does not know the words *player*, *health* or *level*. Terrain, bar charts, data visualisation and a 3D figure on a slide all use the same core and never import the physics.
 
-## Por onde começar
+## Where to start
 
-| se você quer | vá para |
+| if you want to | go to |
 |---|---|
-| pôr a lib no seu arquivo | [Instalação](Instalacao.md) |
-| ver alguma coisa na tela em 20 linhas | [Primeiros passos](Primeiros-passos.md) |
-| entender como as peças se encaixam | [Conceitos](Conceitos.md) |
-| saber se isso é 3D de verdade | [Como o 3D funciona](Como-o-3D-funciona.md) |
-| fazer um jogo | [Corpo e física](Corpo-e-fisica.md) |
-| escrever fase em arquivo | [Fases em JSON](Fases-em-JSON.md) |
-| a lista completa de tudo | [Referência da API](API-PCore.md) |
+| put the library in your file | [Installation](Installation.md) |
+| see something on screen in twenty lines | [Getting started](Getting-Started.md) |
+| understand how the pieces fit | [Concepts](Concepts.md) |
+| know whether this is real 3D | [How the 3D works](How-The-3D-Works.md) |
+| build a game | [Body and physics](Body-And-Physics.md) |
+| write levels as files | [Levels in JSON](Levels-In-JSON.md) |
+| the complete list of everything | [API reference](API-PCore.md) |
 
-## O mapa dos módulos
+## The modules
 
-Os oito primeiros são o núcleo. `Psu3D` é conveniência. `PBody`, `PLevel`, `PSelfTest` e `PDemo` você importa só se quiser.
+The first eight are the core. `Psu3D` is a convenience layer. `PBody`, `PLevel`, `PSelfTest` and `PDemo` are imported only if you want them.
 
-| módulo | o que faz | página |
+| module | what it does | guide |
 |---|---|---|
-| `PCore.bas` | tipos, enums, matemática, random determinístico, cor, relógio | [API](API-PCore.md) |
-| `PLighting.bas` | luz direcional e névoa global | [Luz e névoa](Luz-e-nevoa.md) |
-| `PMaterial.cls` | definição de uma superfície | [Materiais](Materiais.md) |
-| `PMaterials.bas` | registro de materiais e tabela de sombreamento | [Materiais](Materiais.md) |
-| `PCanvas.cls` | onde e como projetar | [Canvas](Canvas.md) |
-| `PCamera.cls` | olho, yaw, pitch | [Câmera](Camera.md) |
-| `PRenderer.cls` | pipeline de face e as primitivas | [Renderer e primitivas](Renderer-e-primitivas.md) |
-| `PScene.cls` | store de objetos, índice espacial, ordem de desenho | [Cena](Cena.md) |
-| `PBody.cls` | corpo que anda, colide, sobe degrau, escala, nada | [Corpo e física](Corpo-e-fisica.md) |
-| `PLevel.bas` | ler e escrever cena em JSON | [Fases em JSON](Fases-em-JSON.md) |
-| `Psu3D.bas` | fachada | [API](API-Psu3D.md) |
-| `PSelfTest.bas` | autoteste da biblioteca | [Autoteste](Autoteste.md) |
-| `PDemo.bas` | fase jogável de exemplo | [Receitas](Receitas.md) |
+| `PCore.bas` | types, enums, maths, deterministic random, colour, clock | [API](API-PCore.md) |
+| `PLighting.bas` | directional light and global fog | [Lighting and fog](Lighting-And-Fog.md) |
+| `PMaterial.cls` | the definition of one surface | [Materials](Materials.md) |
+| `PMaterials.bas` | material registry and precomputed shading table | [Materials](Materials.md) |
+| `PCanvas.cls` | where and how to project | [Canvas](Canvas.md) |
+| `PCamera.cls` | eye, yaw, pitch | [Camera](Camera.md) |
+| `PRenderer.cls` | face pipeline and the primitives | [Renderer and primitives](Renderer-And-Primitives.md) |
+| `PScene.cls` | object store, spatial index, draw order | [Scene](Scene.md) |
+| `PBody.cls` | a body that walks, collides, steps up, climbs and swims | [Body and physics](Body-And-Physics.md) |
+| `PLevel.bas` | read and write a scene as JSON | [Levels in JSON](Levels-In-JSON.md) |
+| `Psu3D.bas` | facade | [API](API-Psu3D.md) |
+| `PSelfTest.bas` | library self test | [Self test](Self-Test.md) |
+| `PDemo.bas` | playable example level | [Recipes](Recipes.md) |
 
-Nada de terceiros vem embutido e **o núcleo não chama nada de fora**. `PLevel` precisa de um parser de JSON, que está em [vbacollective/json](https://github.com/vbacollective/json). O `PDemo` precisa de um módulo de cursor para o mouse. Os detalhes estão em [Instalação](Instalacao.md).
+Nothing third party is bundled, and **the core calls nothing outside itself**. `PLevel` needs a JSON parser, which lives at [vbacollective/json](https://github.com/vbacollective/json). Everything else, including the keyboard and the mouse used by the demo, is declared inside the modules that use it.
 
-## As regras que a lib segue
+## The rules the library follows
 
-Estas não são preferências, são restrições que valem em todo arquivo do repositório.
+These are not preferences. They hold in every file of the repository.
 
-**Zero `On Error`.** Todo caminho que poderia estourar (nome de shape inexistente, hex inválido, id fora do range, chave duplicada) é validado à mão. `On Error` no VBA esconde o erro em vez de tratar, e depois some com a pilha.
+**No `On Error` anywhere.** Every path that could raise, a missing shape name, an invalid hex string, an id out of range, a duplicate key, is checked by hand. `On Error` in VBA hides the fault instead of handling it, and then loses the stack.
 
-**`Option Private Module` em todo `.bas`.** As classes não aceitam essa instrução; nelas o equivalente é o atributo `VB_Exposed = False`, que já está no cabeçalho de cada arquivo. Duas exceções deliberadas: `PSelfTest` e `PDemo`, porque o diálogo de macros só lista ponto de entrada público.
+**`Option Private Module` in every `.bas`.** Classes cannot carry that statement, so they carry the `VB_Exposed = False` attribute instead, which is the class level equivalent. Two deliberate exceptions: `PSelfTest` and `PDemo`, because the macro dialog only lists public entry points.
 
-**Array puro, sem COM no caminho quente.** COM só aparece onde é fisicamente inevitável: `AddPolyline`, a cor do preenchimento por polígono, e o `Range(...).Delete` que limpa o frame inteiro numa chamada só.
+**Plain arrays, no COM on the hot path.** COM appears only where it is physically unavoidable: `AddPolyline`, the fill colour of each polygon, and the single `Range(...).Delete` that retires a whole frame.
 
-**Sem limite fixo.** Registro de materiais, pool de shapes e store de objetos crescem dobrando de tamanho. Nada de `MAX_WORLD_PLATS`.
+**No fixed ceilings.** The material registry, the shape pool and the object store all grow by doubling. There is no `MAX_WORLD_PLATS`.
 
-**UDT em classe é `Friend`, nunca `Public`.** O VBA recusa tipo definido pelo usuário de módulo padrão na assinatura pública de um módulo de classe. Enum pode ser público normalmente; a regra vale só para `Type`.
+**A UDT in a class is `Friend`, never `Public`.** VBA refuses a user defined type from a standard module in the public signature of a class module. Enums are fine as public; the rule applies only to `Type`.
 
-## Estado
+## Status
 
-174 asserções de autoteste, 13 módulos, cerca de 11 mil linhas de VBA. Rode `PSelfTest.Psu3DSelfTest` depois de importar.
+178 self test assertions, 13 modules, roughly 11,000 lines of VBA. Run `PSelfTest.Psu3DSelfTest` after importing.

@@ -47,6 +47,7 @@ Public Function RunAll() As String
     CheckBody
     CheckRenderer
     CheckOrder
+    CheckStability
     CheckLevel
     CheckSave
     CheckHardening
@@ -961,6 +962,110 @@ Private Sub CheckHardening()
     Ok "hard.an awkward name is written escaped", InStr(txt, "\" & Chr$(34)) > 0 And InStr(txt, "\\") > 0
     Ok "hard.and the document still reads back", PLevel.Parse(txt, sc2)
     Ok "hard.with the object intact", sc2.Count = sc.Count
+
+    PMaterials.Clear
+End Sub
+
+'/**
+' * @brief Checks that two nearly identical frames agree with each other.
+' * @description A frame can be correct and still look wrong if the next one disagrees with it. An object
+' * that changes level of detail, or drops out of the budget, between two frames that are almost the same
+' * is a flicker, and a flicker is what a player actually notices. Both decisions carry hysteresis, and
+' * hysteresis can only be tested by holding a value right on the threshold and jiggling it.
+' */
+Private Sub CheckStability()
+    Dim sc As PScene
+    Dim rd As PRenderer
+    Dim cv As PCanvas
+    Dim cam As PCamera
+    Dim solid As Long
+    Dim i As Long
+    Dim edge As Single
+    Dim dist As Single
+    Dim flips As Long
+    Dim wasLod As Boolean
+    Dim isLod As Boolean
+    Dim first As Boolean
+    Dim n1 As Long
+    Dim n2 As Long
+
+    PMaterials.Clear
+    Set sc = New PScene
+    Set cv = New PCanvas
+    Set cam = New PCamera
+    Set rd = New PRenderer
+
+    cv.Init 0!, 0!, 720!, 405!
+
+    '/* Pinned rather than inherited. Left alone, the far plane falls back to the end of the fog, and
+    ' * an earlier check may have moved that, which would cull the boxes this one depends on. */
+    cv.FarPlane = 60!
+
+    Set rd.Canvas = cv
+    Set rd.Camera = cam
+    rd.DryRun = True
+    rd.PolyBudget = 400
+
+    solid = PMaterials.Create("s_box", PCore.ColorPack(150, 150, 150), pcSolid).Id
+
+    '/* One box, and a camera parked at exactly the distance where its projected size sits on the level
+    ' * of detail line, jiggling by a few centimetres. The bounding sphere of a box spanning two by two
+    ' * by one has a radius of 1.5, and a projected size is radius times focal length over distance, so
+    ' * the distance that lands exactly on the threshold can be worked out rather than guessed. */
+    sc.AddBox solid, -1!, 20!, 1!, 22!, 1!, 1!
+    sc.LodSize = 200!
+
+    edge = 1.5 * cv.FocalLength / (sc.LodSize * 0.5!)
+
+    flips = 0
+    first = True
+
+    For i = 0 To 90
+        dist = edge + Sin(i * 0.9) * 0.2
+        cam.Init 0!, 21! - dist, 0.5, P_HALF_PI, 0!
+        sc.Render rd
+
+        If sc.DrawnCount > 0 Then
+            isLod = sc.WasReduced(0)
+
+            If Not first Then
+                If isLod <> wasLod Then flips = flips + 1
+            End If
+
+            wasLod = isLod
+            first = False
+        End If
+    Next i
+
+    '/* With one threshold the answer changes on nearly every frame. With two it never changes at all,
+    ' * because the jiggle stays inside the band between them. */
+    Ok "stable.level of detail does not dither on the threshold", flips = 0
+
+    '/* Ten boxes at three polygons each, and a budget that admits six of them. Shaving two polygons off
+    ' * the budget would drop the sixth, which is the object sitting on the cut. It is already on screen,
+    ' * so it is allowed to overspend by a little rather than blink out. */
+    PMaterials.Clear
+    Set sc = New PScene
+    solid = PMaterials.Create("s_box", PCore.ColorPack(150, 150, 150), pcSolid).Id
+
+    For i = 0 To 9
+        sc.AddBox solid, -0.4, 6! + i * 2!, 0.4, 7! + i * 2!, 1!, 1!
+    Next i
+
+    sc.LodSize = 0!
+    cam.Init 0!, 0!, 0.5, P_HALF_PI, 0!
+
+    rd.PolyBudget = 18
+    n1 = sc.Render(rd)
+
+    rd.PolyBudget = 16
+    n2 = sc.Render(rd)
+
+    Ok "stable.the budget admits six of ten", n1 = 6
+    Ok "stable.an object on screen is not cut for two polygons", n2 >= n1
+
+    '/* And an object that was never drawn does not sneak in through the same door. */
+    Ok "stable.the slack does not admit the rest", n2 < 10
 
     PMaterials.Clear
 End Sub

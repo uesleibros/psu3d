@@ -1,14 +1,14 @@
 # PRenderer
 
-**Pipeline de face e primitivas**
+**Face pipeline and primitives**
 
 Turns world space faces into PowerPoint polylines: backface rejection, view frustum clipping, perspective projection into a PCanvas, material shading and the pooled shape emission that keeps the slide from thrashing. One renderer drives exactly one canvas, so a slide can host several independent views at once.
 
 > Shapes are named from a per renderer prefix and deleted as a single Range on the next frame, which is by far the cheapest way to clear a slide from VBA.
 
-> **Escopo.** Private to this VBA project: class modules carry VB_Exposed = False, which is the class level equivalent of Option Private Module.
+> **Scope.** Private to this VBA project: class modules carry VB_Exposed = False, which is the class level equivalent of Option Private Module.
 
-## Indice
+## Index
 
 **Instance state.** [`Attach`](#attach)
 
@@ -24,7 +24,7 @@ Turns world space faces into PowerPoint polylines: backface rejection, view frus
 
 **Primitives.** [`DrawBox`](#drawbox), [`DrawBoxLod`](#drawboxlod), [`DrawBoxRotated`](#drawboxrotated), [`DrawRamp`](#drawramp), [`DrawWall`](#drawwall), [`DrawFloor`](#drawfloor), [`DrawBillboard`](#drawbillboard), [`DrawSpinner`](#drawspinner)
 
-## Membros
+## Members
 
 ### Attach
 
@@ -34,13 +34,13 @@ Public Function Attach(ByVal target As Shapes, ByVal cv As PCanvas, ByVal cam As
 
 Binds the renderer to a slide, a canvas and a camera.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `target` | The Shapes collection of the slide being drawn into. |
 | `cv` | The canvas describing where and how to project. |
 | `cam` | The camera describing where the view is taken from. |
 
-**Devolve.** The renderer itself, so it can be created and bound in one expression.
+**Returns.** The renderer itself, so it can be created and bound in one expression.
 
 ### Canvas
 
@@ -51,11 +51,11 @@ Public Property Set Canvas(ByVal value As PCanvas)
 
 Reads the canvas this renderer draws into.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `value` | The canvas to draw into. |
 
-**Devolve.** The bound canvas.
+**Returns.** The bound canvas.
 
 ### Camera
 
@@ -66,11 +66,11 @@ Public Property Set Camera(ByVal value As PCamera)
 
 Reads the camera driving this renderer.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `value` | The camera to render from. |
 
-**Devolve.** The bound camera.
+**Returns.** The bound camera.
 
 ### Target
 
@@ -81,11 +81,11 @@ Public Property Set Target(ByVal value As Shapes)
 
 Reads the shape collection being drawn into.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `value` | The Shapes collection of the target slide. |
 
-**Devolve.** The bound Shapes collection.
+**Returns.** The bound Shapes collection.
 
 ### Prefix
 
@@ -96,13 +96,13 @@ Public Property Let Prefix(ByVal value As String)
 
 Reads the prefix given to every shape this renderer creates.
 
-Escrita: Sets the prefix given to every shape this renderer creates.
+**Write.** Sets the prefix given to every shape this renderer creates.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `value` | The new prefix; give each renderer on a slide its own so cleanup never crosses over. |
 
-**Devolve.** The shape name prefix.
+**Returns.** The shape name prefix.
 
 ### BeginFrame
 
@@ -133,13 +133,13 @@ Public Property Let DoubleBuffer(ByVal value As Boolean)
 
 Reports whether the previous frame is kept on the slide while the next one is drawn.
 
-Escrita: Chooses whether the previous frame is kept while the next is drawn.
+**Write.** Chooses whether the previous frame is kept while the next is drawn.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `value` | True to trade a moment of doubled shape count for a slide that is never seen blank. |
 
-**Devolve.** True when double buffered.
+**Returns.** True when double buffered.
 
 > Turning this off restores the clear-then-draw order and removes the need to call EndFrame.
 
@@ -179,7 +179,7 @@ Public Sub SetPool(ByVal maxPolys As Long)
 
 Reserves shape name slots up front so no growth happens mid frame.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `maxPolys` | How many polygon slots to reserve. |
 
@@ -193,7 +193,7 @@ Public Sub SetBudgetRange(ByVal minPolys As Long, ByVal maxPolys As Long)
 
 Sets the range the adaptive budget may travel inside.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `minPolys` | The floor the budget never drops under, protecting the silhouette of the scene. |
 | `maxPolys` | The ceiling the budget never climbs over. |
@@ -206,7 +206,7 @@ Public Sub SetFrameTargets(ByVal fastSeconds As Single, ByVal slowSeconds As Sin
 
 Sets the frame times the adaptive budget aims between.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `fastSeconds` | Frames quicker than this earn more polygons. |
 | `slowSeconds` | Frames slower than this give polygons back. |
@@ -219,7 +219,7 @@ Public Sub AdaptBudget(ByVal dt As Single)
 
 Nudges the polygon budget towards the frame time targets.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `dt` | The duration of the frame just finished, in seconds. |
 
@@ -236,13 +236,13 @@ Public Property Let AutoBudget(ByVal value As Boolean)
 
 Reports whether the budget follows the frame time.
 
-Escrita: Chooses whether the budget follows the frame time.
+**Write.** Chooses whether the budget follows the frame time.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `value` | False to pin the budget where it is, which removes the last source of objects popping in and out. |
 
-**Devolve.** True when AdaptBudget is allowed to move it.
+**Returns.** True when AdaptBudget is allowed to move it.
 
 ### Remaining
 
@@ -252,7 +252,7 @@ Public Property Get Remaining() As Long
 
 Reads how many polygons may still be drawn this frame.
 
-**Devolve.** The remaining budget.
+**Returns.** The remaining budget.
 
 ### IsFull
 
@@ -262,7 +262,7 @@ Public Property Get IsFull() As Boolean
 
 Reports whether the frame budget is spent.
 
-**Devolve.** True when further draw calls will be ignored.
+**Returns.** True when further draw calls will be ignored.
 
 ### PolyCount
 
@@ -272,7 +272,7 @@ Public Property Get PolyCount() As Long
 
 Reads how many polygons have been emitted this frame.
 
-**Devolve.** The current shape count.
+**Returns.** The current shape count.
 
 ### PolyBudget
 
@@ -283,13 +283,13 @@ Public Property Let PolyBudget(ByVal value As Long)
 
 Reads the current polygon budget.
 
-Escrita: Overrides the polygon budget, pinning it until AdaptBudget moves it again.
+**Write.** Overrides the polygon budget, pinning it until AdaptBudget moves it again.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `value` | The new budget. |
 
-**Devolve.** The number of polygons allowed this frame.
+**Returns.** The number of polygons allowed this frame.
 
 ### PoolSize
 
@@ -299,7 +299,7 @@ Public Property Get PoolSize() As Long
 
 Reads how many shape name slots are currently reserved.
 
-**Devolve.** The reserved slot count, which grows on demand.
+**Returns.** The reserved slot count, which grows on demand.
 
 ### ComSeconds
 
@@ -309,7 +309,7 @@ Public Property Get ComSeconds() As Double
 
 Reads how long this frame spent inside PowerPoint.
 
-**Devolve.** Seconds spent creating, formatting and deleting shapes.
+**Returns.** Seconds spent creating, formatting and deleting shapes.
 
 > Compare against the whole frame time and the answer to where the frame went stops being a guess. Everything not counted here is arithmetic the engine itself did.
 
@@ -321,7 +321,7 @@ Public Property Get ComOps() As Long
 
 Reads how many shapes this frame created.
 
-**Devolve.** The emission count.
+**Returns.** The emission count.
 
 ### Profiling
 
@@ -332,13 +332,13 @@ Public Property Let Profiling(ByVal value As Boolean)
 
 Reports whether COM timing is being collected.
 
-Escrita: Chooses whether COM timing is collected.
+**Write.** Chooses whether COM timing is collected.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `value` | False to drop the two clock reads per polygon, which cost well under a percent of a frame. |
 
-**Devolve.** True when profiling.
+**Returns.** True when profiling.
 
 ### DryRun
 
@@ -349,13 +349,13 @@ Public Property Let DryRun(ByVal value As Boolean)
 
 Reports whether the pipeline is running without touching the slide.
 
-Escrita: Runs the whole pipeline but creates no shapes, so the cost of the slide can be measured.
+**Write.** Runs the whole pipeline but creates no shapes, so the cost of the slide can be measured.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `value` | True to suppress shape creation. |
 
-**Devolve.** True while shape creation is suppressed.
+**Returns.** True while shape creation is suppressed.
 
 Culling, clipping, projection, shading and ordering all still run and PolyCount still reports what would have been drawn; only the COM calls are skipped. Time a run with this on and a run with it off, and the difference is what PowerPoint itself costs, which is the number worth knowing before optimising anything else. Toggle it between frames, never inside one.
 
@@ -368,13 +368,13 @@ Public Property Let SeamFill(ByVal value As Boolean)
 
 Reports how the gap between neighbouring faces is closed.
 
-Escrita: Chooses how the gap between neighbouring faces is closed.
+**Write.** Chooses how the gap between neighbouring faces is closed.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `value` | True to stroke each polygon in its own fill colour, False to inflate its outline geometrically. |
 
-**Devolve.** True when the outline is painted in the fill colour, False when polygons are inflated instead.
+**Returns.** True when the outline is painted in the fill colour, False when polygons are inflated instead.
 
 Two ways to hide the hairline seam PowerPoint leaves between adjacent polygons. Inflating pushes every vertex away from the centre, which distorts small polygons badly because the push is a fixed number of points regardless of how big the polygon is. Stroking the outline in the fill colour expands the shape uniformly by half a line weight, costs exactly the same single COM call, and leaves the geometry untouched. Set EdgeInflate to zero when turning this on, or the two stack.
 
@@ -387,13 +387,13 @@ Public Property Let EdgeInflate(ByVal value As Single)
 
 Reads how far polygon borders are pushed outwards.
 
-Escrita: Sets how far polygon borders are pushed outwards, which hides the hairline gaps between neighbouring faces.
+**Write.** Sets how far polygon borders are pushed outwards, which hides the hairline gaps between neighbouring faces.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `value` | The inflation in points; around half a point is usually enough. |
 
-**Devolve.** The inflation in points.
+**Returns.** The inflation in points.
 
 ### MinPolyArea
 
@@ -404,13 +404,13 @@ Public Property Let MinPolyArea(ByVal value As Single)
 
 Reads the smallest screen area a polygon may cover.
 
-Escrita: Sets the smallest screen area a polygon may cover before it is dropped.
+**Write.** Sets the smallest screen area a polygon may cover before it is dropped.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `value` | The area threshold in square points. |
 
-**Devolve.** The area threshold in square points.
+**Returns.** The area threshold in square points.
 
 ### SetFarCulling
 
@@ -420,7 +420,7 @@ Public Sub SetFarCulling(ByVal area As Single, ByVal depth As Single)
 
 Sets the stricter area threshold applied to distant polygons.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `area` | The area threshold in square points. |
 | `depth` | The view depth beyond which the stricter threshold applies. |
@@ -433,7 +433,7 @@ Public Sub DrawQuad(ByVal x0 As Single, ByVal y0 As Single, ByVal z0 As Single, 
 
 Draws a quad straight from its four corners.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `x0` | The first corner X coordinate. |
 | `y0` | The first corner Y coordinate. |
@@ -458,7 +458,7 @@ Public Sub DrawTriangle(ByVal x0 As Single, ByVal y0 As Single, ByVal z0 As Sing
 
 Draws a triangle straight from its three corners.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `x0` | The first corner X coordinate. |
 | `y0` | The first corner Y coordinate. |
@@ -480,7 +480,7 @@ Public Sub DrawPolygon2D(ByRef ax() As Single, ByRef ay() As Single, ByVal count
 
 Draws a polygon whose points are already in slide coordinates, bypassing the 3D pipeline.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `ax` | The X coordinates of the polygon. |
 | `ay` | The Y coordinates of the polygon. |
@@ -499,7 +499,7 @@ Public Sub DrawBox(ByVal matId As Long, ByVal x1 As Single, ByVal y1 As Single, 
 
 Draws an axis-aligned box, submitting only the faces the eye can see.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `matId` | The material id of every face. |
 | `x1` | The lower X bound. |
@@ -517,7 +517,7 @@ Public Sub DrawBoxLod(ByVal matId As Long, ByVal x1 As Single, ByVal y1 As Singl
 
 Draws an axis-aligned box as the single face that covers the most of it from here.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `matId` | The material id of the face. |
 | `x1` | The lower X bound. |
@@ -537,7 +537,7 @@ Public Sub DrawBoxRotated(ByVal matId As Long, ByVal cx As Single, ByVal cy As S
 
 Draws a box spun around its own vertical axis.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `matId` | The material id of every face. |
 | `cx` | The centre X coordinate. |
@@ -558,7 +558,7 @@ Public Sub DrawRamp(ByVal matId As Long, ByVal x1 As Single, ByVal y1 As Single,
 
 Draws a sloped slab climbing along one axis.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `matId` | The material id of every face. |
 | `x1` | The lower X bound. |
@@ -578,7 +578,7 @@ Public Sub DrawWall(ByVal matId As Long, ByVal x1 As Single, ByVal y1 As Single,
 
 Draws a single upright wall between two ground points.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `matId` | The material id of the wall. |
 | `x1` | The X coordinate of the first end. |
@@ -598,7 +598,7 @@ Public Sub DrawFloor(ByVal matId As Long, ByVal x1 As Single, ByVal y1 As Single
 
 Draws a flat ground quad.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `matId` | The material id of the quad. |
 | `x1` | The lower X bound. |
@@ -615,7 +615,7 @@ Public Sub DrawBillboard(ByVal matId As Long, ByVal X As Single, ByVal Y As Sing
 
 Draws an upright quad that always turns its face to the camera.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `matId` | The material id of the billboard. |
 | `X` | The centre X coordinate. |
@@ -634,7 +634,7 @@ Public Sub DrawSpinner(ByVal matId As Long, ByVal X As Single, ByVal Y As Single
 
 Draws a spinning double sided plate, the classic collectible look.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `matId` | The material id of the plate. |
 | `X` | The centre X coordinate. |
@@ -643,9 +643,9 @@ Draws a spinning double sided plate, the classic collectible look.
 | `radius` | The half size of the plate. |
 | `phase` | The spin angle in radians. |
 
-## Membros `Friend`
+## `Friend` members
 
-Visiveis para o projeto VBA inteiro, mas nao para fora dele. Um membro publico de classe nao pode receber um tipo declarado em modulo padrao, e e por isso que estes sao `Friend` em vez de `Public`.
+Visible to the whole VBA project but not outside it. A public member of a class cannot take a type declared in a standard module, which is why these are `Friend` rather than `Public`.
 
 ### EyeX
 

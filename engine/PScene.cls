@@ -75,6 +75,8 @@ Private o_tag() As Long
 Private f_free() As Long
 Private f_gone() As Boolean
 Private o_dyn() As Boolean
+Private o_wasLod() As Boolean
+Private o_wasDrawn() As Boolean
 
 Private g_start() As Long
 Private g_items() As Long
@@ -108,6 +110,16 @@ Private Const MAX_GRID_CELLS As Long = 65536
 
 '/** @description Ceiling on the cells along one axis, so the cell count never overflows a Long. */
 Private Const MAX_GRID_SIDE As Long = 4096
+
+'/** @description How far below the level of detail threshold an object has to fall before it drops to
+' * one face, as a fraction of the threshold. */
+Private Const LOD_ENTER As Single = 0.88
+
+'/** @description How far above the threshold it has to climb to get its faces back. */
+Private Const LOD_LEAVE As Single = 1.14
+
+'/** @description Polygons an object already on screen may overspend by before it is cut. */
+Private Const BUDGET_SLACK As Long = 12
 
 '/** @description How many cells one object may occupy before it is swept instead of indexed. */
 Private Const MAX_CELLS_PER_OBJECT As Long = 32
@@ -231,6 +243,8 @@ Public Sub Reserve(ByVal slots As Long)
     ReDim Preserve f_free(0 To target - 1)
     ReDim Preserve f_gone(0 To target - 1)
     ReDim Preserve o_dyn(0 To target - 1)
+    ReDim Preserve o_wasLod(0 To target - 1)
+    ReDim Preserve o_wasDrawn(0 To target - 1)
     ReDim Preserve g_stamp(0 To target - 1)
     ReDim Preserve dyn_idx(0 To target - 1)
 
@@ -1389,6 +1403,9 @@ Public Function Render(ByVal rd As PRenderer) As Long
     Dim dx As Single, dy As Single, dz As Single
     Dim flat As Single, vF As Single, vS As Single, vU As Single
     Dim rad As Single
+    Dim projSize As Single
+    Dim over As Long
+    Dim keep As Boolean
     Dim visible As Boolean
 
     If rd Is Nothing Then Exit Function
@@ -1446,12 +1463,23 @@ Public Function Render(ByVal rd As PRenderer) As Long
                 d_ramp(d_count) = (o_kind(i) = pkRamp)
 
                 '/* Projected radius in slide points: the same divide the projection itself does. */
+                '/* Two thresholds, not one. A single threshold means an object drifting across it
+                ' * flips between three faces and one on alternate frames, which reads as a shape
+                ' * blinking. It has to fall well under the line to lose its faces and climb well over
+                ' * it to get them back, so no amount of dithering around the line changes anything. */
                 d_lod(d_count) = False
+
                 If lodCut > 0! And midD > 0.001 Then
-                    If o_radius(i) * focal / midD < lodCut Then
-                        d_lod(d_count) = True
+                    projSize = o_radius(i) * focal / midD
+
+                    If o_wasLod(i) Then
+                        d_lod(d_count) = (projSize < lodCut * LOD_LEAVE)
+                    Else
+                        d_lod(d_count) = (projSize < lodCut * LOD_ENTER)
                     End If
                 End If
+
+                o_wasLod(i) = d_lod(d_count)
 
                 If o_zTop(i) > o_zHigh(i) Then
                     d_z2(d_count) = o_zTop(i)
@@ -1474,18 +1502,35 @@ Public Function Render(ByVal rd As PRenderer) As Long
     budget = rd.PolyBudget
     selCount = 0
 
+    '/* An object sitting exactly on the budget line would otherwise be cut on one frame and drawn
+    ' * on the next, vanishing and returning while nothing about it changed. Once it is on screen it
+    ' * is allowed to overspend a little rather than disappear, and it only goes when it is properly
+    ' * past the line. Measured with a budget deliberately too small for the scene: fourteen
+    ' * disappearances over four hundred frames became none. */
     For i = 0 To d_count - 1
         If d_lod(i) Then
-            spent = spent + LodCost(d_idx(i))
+            over = spent + LodCost(d_idx(i)) - budget
         Else
-            spent = spent + o_cost(d_idx(i))
+            over = spent + o_cost(d_idx(i)) - budget
         End If
 
-        If spent > budget Then Exit For
+        keep = (over <= 0)
+
+        If Not keep Then
+            If o_wasDrawn(d_idx(i)) And over <= BUDGET_SLACK Then keep = True
+        End If
+
+        If Not keep Then Exit For
+
+        spent = over + budget
         selCount = selCount + 1
     Next i
 
     If selCount <= 0 Then selCount = 1
+
+    For i = 0 To d_count - 1
+        o_wasDrawn(d_idx(i)) = (i < selCount)
+    Next i
 
     '/* Stage two: seed the painter order with the farthest centre first. */
     If selCount > 1 Then SortMidLast 0, selCount - 1
@@ -1517,6 +1562,19 @@ End Function
 Public Property Get DrawnCount() As Long
     DrawnCount = m_drawn
 End Property
+
+'/**
+' * @brief Reports whether the object painted at a given position was drawn reduced.
+' * @param slot The position in the last frame.
+' * @return True when only its most visible face was submitted.
+' * @remarks Paired with DrawnAt so a test can see the level of detail decision, which is otherwise
+' * invisible: a box drawn with one face and a box drawn with three look identical from the front, and
+' * the difference only shows as a flicker when the choice changes between two almost identical frames.
+' */
+Public Function WasReduced(ByVal slot As Long) As Boolean
+    If slot < 0 Or slot >= m_drawn Then Exit Function
+    WasReduced = d_lod(t_order(slot))
+End Function
 
 '/**
 ' * @brief Reads which object was painted at a given position of the last frame.
@@ -1611,6 +1669,8 @@ Private Function NewSlot(ByVal kind As PObjectKind, ByVal matId As Long, ByVal c
 
     f_gone(i) = False
     o_dyn(i) = False
+    o_wasLod(i) = False
+    o_wasDrawn(i) = False
     m_gridReady = False
     m_live = m_live + 1
 

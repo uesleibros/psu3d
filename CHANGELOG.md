@@ -1,5 +1,29 @@
 # Changelog
 
+## 1.1.0
+
+### Flicker fixes
+
+Two things could make an object blink or vanish between two frames that were otherwise identical. Both were found by measuring temporal stability along a smooth camera path, not by looking at a single frame.
+
+**Level of detail had a single threshold.** An object drifting across it flipped between three faces and one on alternate frames, which reads as a shape blinking. It now has two thresholds: it has to fall well under the line to lose its faces and climb well over it to get them back. Measured over 260 frames: four pops became none.
+
+**The budget cut had no hysteresis.** An object sitting exactly on the polygon budget was cut on one frame and drawn on the next, disappearing and returning while nothing about it changed. An object already on screen may now overspend by a small, bounded margin rather than vanish. Measured with a deliberately tight budget over 400 frames: fourteen disappearances became none.
+
+The residual five order flips per 260 frames come from genuine ordering cycles. Five alternative tiebreak rules were measured against them, including breaking by strongly connected component and by least visible damage, and none improved on the current one.
+
+`PScene.WasReduced(slot)` was added alongside `DrawnAt`, so the level of detail decision can be observed. It is what the new `CheckStability` block tests.
+
+### The demo declares its own input
+
+`PDemo` now declares `GetCursorPos`, `SetCursorPos`, `ShowCursor` and `GetSystemMetrics` at the top of the file, next to the keyboard declaration it already had. Mouse look reads the pointer, measures its travel from a fixed anchor, and warps it back, which is relative mouse without capturing the device. Because the same anchor is used to read and to warp, its exact position never matters, so no conversion between screen pixels and slide points is needed.
+
+Psu3D now has exactly one external requirement, and only for one module: `PLevel` needs a JSON parser.
+
+### Documentation
+
+The whole documentation set was rewritten in English and reorganised into nineteen hand written pages plus twelve generated reference pages, one per module, produced from the docstrings in the source so no signature in the documentation can drift from the signature in the code.
+
 ## 1.0.1
 
 ### O núcleo deixou de depender do UCursor

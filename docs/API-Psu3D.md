@@ -1,12 +1,12 @@
 # Psu3D
 
-**Fachada**
+**Facade**
 
 The one entry point a slide needs: it boots a canvas, a camera, a renderer and a scene, wires them together, and keeps them reachable as engine wide defaults. Everything it hands back is an ordinary object, so a project that outgrows the defaults can build its own set and ignore this module entirely.
 
 > Import order inside the VBE does not matter, but the module list is PCore, PLighting, PMaterial, PMaterials, PCanvas, PCamera, PRenderer, PScene, PBody, PLevel and finally this facade.
 
-## Indice
+## Index
 
 **Identity.** [`Version`](#version)
 
@@ -20,7 +20,7 @@ The one entry point a slide needs: it boots a canvas, a camera, a renderer and a
 
 **Frame.** [`BeginFrame`](#beginframe), [`EndFrame`](#endframe), [`RenderScene`](#renderscene)
 
-## Membros
+## Members
 
 ### Version
 
@@ -30,7 +30,7 @@ Public Function Version() As String
 
 Reads the library name and version.
 
-**Devolve.** A short identification string.
+**Returns.** A short identification string.
 
 ### Boot
 
@@ -40,7 +40,7 @@ Public Sub Boot(ByVal target As Shapes, Optional ByVal X As Single = 0!, Optiona
 
 Builds the default canvas, camera, renderer and scene and binds them to a slide.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `target` | The Shapes collection of the slide that will be drawn into. |
 | `X` | The left edge of the view, in slide points; the whole slide is used when width and height are left at zero. |
@@ -68,7 +68,7 @@ Public Property Get IsReady() As Boolean
 
 Reports whether Boot has run.
 
-**Devolve.** True when the default objects exist.
+**Returns.** True when the default objects exist.
 
 ### Canvas
 
@@ -78,7 +78,7 @@ Public Property Get Canvas() As PCanvas
 
 Reads the default canvas.
 
-**Devolve.** The canvas built by Boot, or Nothing before it runs.
+**Returns.** The canvas built by Boot, or Nothing before it runs.
 
 ### Camera
 
@@ -88,7 +88,7 @@ Public Property Get Camera() As PCamera
 
 Reads the default camera.
 
-**Devolve.** The camera built by Boot.
+**Returns.** The camera built by Boot.
 
 ### Renderer
 
@@ -98,7 +98,7 @@ Public Property Get Renderer() As PRenderer
 
 Reads the default renderer.
 
-**Devolve.** The renderer built by Boot.
+**Returns.** The renderer built by Boot.
 
 ### Scene
 
@@ -108,7 +108,7 @@ Public Property Get Scene() As PScene
 
 Reads the default scene.
 
-**Devolve.** The scene built by Boot.
+**Returns.** The scene built by Boot.
 
 ### CreateCanvas
 
@@ -118,7 +118,7 @@ Public Function CreateCanvas(ByVal X As Single, ByVal Y As Single, ByVal Width A
 
 Creates a canvas, which is how a second view is added to a slide.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `X` | The left edge in slide points. |
 | `Y` | The top edge in slide points. |
@@ -126,7 +126,7 @@ Creates a canvas, which is how a second view is added to a slide.
 | `Height` | The view height in slide points. |
 | `cvName` | The canvas name, which also names its backdrop shape. |
 
-**Devolve.** The new canvas.
+**Returns.** The new canvas.
 
 ### CreateCamera
 
@@ -136,7 +136,7 @@ Public Function CreateCamera(Optional ByVal X As Single = 0!, Optional ByVal Y A
 
 Creates a camera.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `X` | The eye X coordinate. |
 | `Y` | The eye Y coordinate. |
@@ -144,7 +144,7 @@ Creates a camera.
 | `yawRad` | The heading in radians. |
 | `pitchRad` | The elevation in radians. |
 
-**Devolve.** The new camera.
+**Returns.** The new camera.
 
 ### CreateRenderer
 
@@ -154,14 +154,14 @@ Public Function CreateRenderer(ByVal target As Shapes, ByVal cv As PCanvas, ByVa
 
 Creates a renderer already bound to a slide, a canvas and a camera.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `target` | The Shapes collection to draw into. |
 | `cv` | The canvas to project onto. |
 | `cam` | The camera to render from. |
 | `prefix` | The shape name prefix; give every renderer on a slide its own. |
 
-**Devolve.** The new renderer.
+**Returns.** The new renderer.
 
 ### CreateScene
 
@@ -171,11 +171,11 @@ Public Function CreateScene(Optional ByVal slots As Long = 0) As PScene
 
 Creates a scene.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `slots` | How many object slots to reserve up front. |
 
-**Devolve.** The new scene.
+**Returns.** The new scene.
 
 ### CreateBody
 
@@ -185,11 +185,11 @@ Public Function CreateBody(Optional ByVal sc As PScene) As PBody
 
 Creates a body bound to a scene.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `sc` | The scene it moves through; the booted one when none is named. |
 
-**Devolve.** The new body, ready to be tuned and advanced.
+**Returns.** The new body, ready to be tuned and advanced.
 
 ### SetLight
 
@@ -199,7 +199,7 @@ Public Sub SetLight(ByVal dx As Single, ByVal dy As Single, ByVal dz As Single)
 
 Points the global light in a new direction.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `dx` | The X component of the direction. |
 | `dy` | The Y component of the direction. |
@@ -213,7 +213,7 @@ Public Sub SetFog(ByVal startDist As Single, ByVal endDist As Single, ByVal col 
 
 Configures the distance fog, and repaints the canvas backdrop to match.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `startDist` | The depth at which fog begins. |
 | `endDist` | The depth at which geometry disappears into the fog. |
@@ -227,7 +227,7 @@ Public Sub BeginFrame(ByVal dt As Single)
 
 Opens a frame on the default renderer and lets the polygon budget follow the frame time.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `dt` | The duration of the previous frame, in seconds. |
 
@@ -249,4 +249,4 @@ Public Function RenderScene() As Long
 
 Draws the default scene through the default renderer.
 
-**Devolve.** How many objects were submitted.
+**Returns.** How many objects were submitted.

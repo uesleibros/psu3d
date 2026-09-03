@@ -1,16 +1,16 @@
 # PScene
 
-**Store de objetos, indice espacial e ordem de desenho**
+**Object store, spatial index and draw order**
 
 Holds every object in a world as parallel arrays rather than objects, so adding a thousand boxes costs a thousand array slots and no allocations per frame. Answers the two questions a frame asks: which objects can the camera see, and which objects sit inside this box of space.
 
 > There is no object ceiling; the arrays double when they fill. Ids stay valid for the life of an object because nothing ever reshuffles the arrays, but a slot given back by Remove is handed out again, so an id kept past a Remove names whatever took its place.
 
-> **Escopo.** Private to this VBA project: class modules carry VB_Exposed = False, which is the class level equivalent of Option Private Module.
+> **Scope.** Private to this VBA project: class modules carry VB_Exposed = False, which is the class level equivalent of Option Private Module.
 
-## Indice
+## Index
 
-**Lifetime.** [`LodSize`](#lodsize), [`Reserve`](#reserve), [`Clear`](#clear), [`Count`](#count), [`LiveCount`](#livecount)
+**Object arrays.** [`LodSize`](#lodsize), [`Reserve`](#reserve), [`Clear`](#clear), [`Count`](#count), [`LiveCount`](#livecount)
 
 **Building.** [`AddBox`](#addbox), [`AddRotatedBox`](#addrotatedbox), [`AddRamp`](#addramp), [`AddBillboard`](#addbillboard), [`AddSpinner`](#addspinner)
 
@@ -24,9 +24,9 @@ Holds every object in a world as parallel arrays rather than objects, so adding 
 
 **Spatial index.** [`DynamicCount`](#dynamiccount), [`CellSize`](#cellsize)
 
-**Rendering.** [`Render`](#render), [`DrawnCount`](#drawncount), [`DrawnAt`](#drawnat), [`DrawObject`](#drawobject)
+**Rendering.** [`Render`](#render), [`DrawnCount`](#drawncount), [`WasReduced`](#wasreduced), [`DrawnAt`](#drawnat), [`DrawObject`](#drawobject)
 
-## Membros
+## Members
 
 ### LodSize
 
@@ -37,13 +37,13 @@ Public Property Let LodSize(ByVal value As Single)
 
 Reads the screen size under which a box drops to a single face.
 
-Escrita: Sets the screen size under which a box drops to a single face.
+**Write.** Sets the screen size under which a box drops to a single face.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `value` | The projected diameter in slide points; zero or less turns the reduction off. |
 
-**Devolve.** The threshold in slide points.
+**Returns.** The threshold in slide points.
 
 A box shows at most three faces, and the two minor ones shrink to slivers long before the dominant one does. Past that point they cost a full shape each to contribute a few points of colour, which on a renderer whose frame is spent inside PowerPoint is the most expensive kind of detail there is. Raise the threshold to buy frame rate, lower it to buy silhouette.
 
@@ -55,7 +55,7 @@ Public Sub Reserve(ByVal slots As Long)
 
 Grows the arrays up front so no allocation happens while the world is being built.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `slots` | How many object slots to make room for. |
 
@@ -75,7 +75,7 @@ Public Property Get Count() As Long
 
 Reads how many object slots have ever been used, which is also the highest id plus one.
 
-**Devolve.** The slot count.
+**Returns.** The slot count.
 
 ### LiveCount
 
@@ -85,7 +85,7 @@ Public Property Get LiveCount() As Long
 
 Reads how many objects are currently active.
 
-**Devolve.** The live object count.
+**Returns.** The live object count.
 
 ### AddBox
 
@@ -95,7 +95,7 @@ Public Function AddBox(ByVal matId As Long, ByVal x1 As Single, ByVal y1 As Sing
 
 Adds an axis-aligned box.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `matId` | The material the box is drawn and collided with. |
 | `x1` | The lower X bound. |
@@ -105,7 +105,7 @@ Adds an axis-aligned box.
 | `zTop` | The height of the top face. |
 | `thickness` | How far the box extends below its top face. |
 
-**Devolve.** The id of the new object.
+**Returns.** The id of the new object.
 
 ### AddRotatedBox
 
@@ -115,7 +115,7 @@ Public Function AddRotatedBox(ByVal matId As Long, ByVal cx As Single, ByVal cy 
 
 Adds a box that spins around its own vertical axis.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `matId` | The material the box is drawn and collided with. |
 | `cx` | The centre X coordinate. |
@@ -126,7 +126,7 @@ Adds a box that spins around its own vertical axis.
 | `thickness` | How far the box extends below its top face. |
 | `angleRad` | The starting rotation in radians. |
 
-**Devolve.** The id of the new object.
+**Returns.** The id of the new object.
 
 ### AddRamp
 
@@ -136,7 +136,7 @@ Public Function AddRamp(ByVal matId As Long, ByVal x1 As Single, ByVal y1 As Sin
 
 Adds a sloped slab.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `matId` | The material the ramp is drawn and collided with. |
 | `x1` | The lower X bound. |
@@ -148,7 +148,7 @@ Adds a sloped slab.
 | `thickness` | How far the slab extends below its sloped face. |
 | `axis` | paX to climb along X, paY to climb along Y. |
 
-**Devolve.** The id of the new object.
+**Returns.** The id of the new object.
 
 ### AddBillboard
 
@@ -158,7 +158,7 @@ Public Function AddBillboard(ByVal matId As Long, ByVal X As Single, ByVal Y As 
 
 Adds a camera facing quad.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `matId` | The material the billboard is drawn with. |
 | `X` | The centre X coordinate. |
@@ -167,7 +167,7 @@ Adds a camera facing quad.
 | `Width` | The width in world units. |
 | `Height` | The height in world units. |
 
-**Devolve.** The id of the new object.
+**Returns.** The id of the new object.
 
 ### AddSpinner
 
@@ -177,7 +177,7 @@ Public Function AddSpinner(ByVal matId As Long, ByVal X As Single, ByVal Y As Si
 
 Adds a spinning double sided plate, the shape pickups usually take.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `matId` | The material the plate is drawn with. |
 | `X` | The centre X coordinate. |
@@ -185,7 +185,7 @@ Adds a spinning double sided plate, the shape pickups usually take.
 | `Z` | The centre Z coordinate. |
 | `radius` | The half size of the plate. |
 
-**Devolve.** The id of the new object.
+**Returns.** The id of the new object.
 
 ### IsActive
 
@@ -195,11 +195,11 @@ Public Function IsActive(ByVal idx As Long) As Boolean
 
 Reports whether an id refers to a live object.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `idx` | The object id. |
 
-**Devolve.** True when the object exists and is active.
+**Returns.** True when the object exists and is active.
 
 ### SetActive
 
@@ -209,7 +209,7 @@ Public Sub SetActive(ByVal idx As Long, ByVal value As Boolean)
 
 Turns an object on or off without disturbing any other id.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `idx` | The object id. |
 | `value` | True to draw and collide with the object. |
@@ -222,7 +222,7 @@ Public Sub Remove(ByVal idx As Long)
 
 Removes an object for good and returns its slot to the store.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `idx` | The object id. |
 
@@ -236,11 +236,11 @@ Public Function MaterialOf(ByVal idx As Long) As Long
 
 Reads the material an object carries.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `idx` | The object id. |
 
-**Devolve.** The material id, or P_INVALID_ID for an unknown object.
+**Returns.** The material id, or P_INVALID_ID for an unknown object.
 
 ### SetMaterial
 
@@ -250,7 +250,7 @@ Public Sub SetMaterial(ByVal idx As Long, ByVal matId As Long)
 
 Swaps the material of an object, which is how surfaces change state at runtime.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `idx` | The object id. |
 | `matId` | The new material id. |
@@ -263,11 +263,11 @@ Public Function KindOf(ByVal idx As Long) As PObjectKind
 
 Reads the primitive kind of an object.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `idx` | The object id. |
 
-**Devolve.** The PObjectKind entry.
+**Returns.** The PObjectKind entry.
 
 ### MoveBy
 
@@ -277,7 +277,7 @@ Public Sub MoveBy(ByVal idx As Long, ByVal dx As Single, ByVal dy As Single, ByV
 
 Shifts an object by an offset, moving both its geometry and its bounds.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `idx` | The object id. |
 | `dx` | The change along X. |
@@ -292,7 +292,7 @@ Public Sub SetTopZ(ByVal idx As Long, ByVal zTop As Single)
 
 Places the top face of an object at an absolute height.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `idx` | The object id. |
 | `zTop` | The new top height. |
@@ -305,7 +305,7 @@ Public Sub SetAngle(ByVal idx As Long, ByVal angleRad As Single)
 
 Sets the spin of a rotated box.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `idx` | The object id. |
 | `angleRad` | The rotation in radians. |
@@ -318,11 +318,11 @@ Public Function AngleOf(ByVal idx As Long) As Single
 
 Reads the spin of a rotated box.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `idx` | The object id. |
 
-**Devolve.** The rotation in radians.
+**Returns.** The rotation in radians.
 
 ### SetPhase
 
@@ -332,7 +332,7 @@ Public Sub SetPhase(ByVal idx As Long, ByVal phase As Single)
 
 Sets the animation phase used by spinners.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `idx` | The object id. |
 | `phase` | The phase in radians. |
@@ -345,7 +345,7 @@ Public Sub SpinAll(ByVal dt As Single, Optional ByVal speed As Single = 2.6!)
 
 Advances the animation phase of every spinner in the scene.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `dt` | The elapsed frame time in seconds. |
 | `speed` | How fast the plates turn, in radians per second. |
@@ -358,7 +358,7 @@ Public Sub SetMotion(ByVal idx As Long, ByVal axisX As Single, ByVal axisY As Si
 
 Makes an object slide back and forth along a direction.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `idx` | The object id. |
 | `axisX` | The X component of the direction it travels along. |
@@ -378,7 +378,7 @@ Public Sub SetSpin(ByVal idx As Long, ByVal speed As Single, Optional ByVal phas
 
 Makes an object turn on its own vertical axis.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `idx` | The object id. |
 | `speed` | The turn rate in radians per second. |
@@ -392,11 +392,11 @@ Public Function UpdateMotion(ByVal dt As Single) As Long
 
 Advances every animated object.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `dt` | The elapsed frame time in seconds. |
 
-**Devolve.** How many objects moved, so a caller that only redraws on change knows to redraw.
+**Returns.** How many objects moved, so a caller that only redraws on change knows to redraw.
 
 > Each mover records the step it just took, which is what a body standing on it needs in order to travel with it. Carrying is left to the caller because it is a rule about bodies, not about scenery, and only the caller knows which object the body is standing on.
 
@@ -408,7 +408,7 @@ Public Sub GetMotionDelta(ByVal idx As Long, ByRef outDx As Single, ByRef outDy 
 
 Reads the step an object took on the last update.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `idx` | The object id. |
 | `outDx` | Receives the change along X. |
@@ -423,11 +423,11 @@ Public Function SpinDelta(ByVal idx As Long) As Single
 
 Reads how far an object turned on the last update.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `idx` | The object id. |
 
-**Devolve.** The change in angle, in radians.
+**Returns.** The change in angle, in radians.
 
 > A body standing on a turning platform has to be swung around its centre by this much, or it stands still while the floor rotates out from under it.
 
@@ -439,7 +439,7 @@ Public Sub GetSize(ByVal idx As Long, ByRef outA As Single, ByRef outB As Single
 
 Reads the two size numbers of an object.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `idx` | The object id. |
 | `outA` | Half the local X extent of a turned box, the width of a billboard, the radius of a spinner. |
@@ -453,7 +453,7 @@ Public Sub GetCenter(ByVal idx As Long, ByRef outX As Single, ByRef outY As Sing
 
 Reads the centre of an object.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `idx` | The object id. |
 | `outX` | The centre X coordinate. |
@@ -468,11 +468,11 @@ Public Function ThickOf(ByVal idx As Long) As Single
 
 Reads how far a slab hangs below its face.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `idx` | The object id. |
 
-**Devolve.** The thickness in world units.
+**Returns.** The thickness in world units.
 
 ### TopOf
 
@@ -482,11 +482,11 @@ Public Function TopOf(ByVal idx As Long) As Single
 
 Reads the height an object was built at.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `idx` | The object id. |
 
-**Devolve.** The top face for a box, the low end for a ramp.
+**Returns.** The top face for a box, the low end for a ramp.
 
 ### HighOf
 
@@ -496,11 +496,11 @@ Public Function HighOf(ByVal idx As Long) As Single
 
 Reads the second height of an object.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `idx` | The object id. |
 
-**Devolve.** The high end for a ramp, and the same as TopOf for anything level.
+**Returns.** The high end for a ramp, and the same as TopOf for anything level.
 
 ### AxisOf
 
@@ -510,11 +510,11 @@ Public Function AxisOf(ByVal idx As Long) As PAxis
 
 Reads which way a ramp climbs.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `idx` | The object id. |
 
-**Devolve.** paX or paY.
+**Returns.** paX or paY.
 
 ### MotionOf
 
@@ -524,7 +524,7 @@ Public Function MotionOf(ByVal idx As Long, ByRef outAx As Single, ByRef outAy A
 
 Reads the motion an object was given.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `idx` | The object id. |
 | `outAx` | The X part of the travel direction. |
@@ -534,7 +534,7 @@ Reads the motion an object was given.
 | `outSpeed` | Its rate, in cycles a second for travel and radians a second for a spin. |
 | `outPhase` | Where in the cycle it starts. |
 
-**Devolve.** 0 when it is still, 1 when it travels, 2 when it spins.
+**Returns.** 0 when it is still, 1 when it travels, 2 when it spins.
 
 ### SetTag
 
@@ -544,7 +544,7 @@ Public Sub SetTag(ByVal idx As Long, ByVal value As Long)
 
 Attaches a number of your own to an object.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `idx` | The object id. |
 | `value` | Whatever the number means to you; zero, the default, means nothing was said. |
@@ -559,11 +559,11 @@ Public Function TagOf(ByVal idx As Long) As Long
 
 Reads the number attached to an object.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `idx` | The object id. |
 
-**Devolve.** The tag, or zero when none was set.
+**Returns.** The tag, or zero when none was set.
 
 ### GetBoundsXY
 
@@ -573,7 +573,7 @@ Public Sub GetBoundsXY(ByVal idx As Long, ByRef outX1 As Single, ByRef outY1 As 
 
 Reads the horizontal bounds of an object.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `idx` | The object id. |
 | `outX1` | Receives the lower X bound. |
@@ -589,7 +589,7 @@ Public Sub GetSpanZ(ByVal idx As Long, ByRef outBottom As Single, ByRef outTop A
 
 Reads the vertical span of an object.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `idx` | The object id. |
 | `outBottom` | Receives the lowest point. |
@@ -603,13 +603,13 @@ Public Function TopZAt(ByVal idx As Long, ByVal X As Single, ByVal Y As Single) 
 
 Measures the height of the walkable surface of an object under a point.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `idx` | The object id. |
 | `X` | The world X coordinate to sample. |
 | `Y` | The world Y coordinate to sample. |
 
-**Devolve.** The surface height, interpolated across the slope for ramps.
+**Returns.** The surface height, interpolated across the slope for ramps.
 
 ### Blocks
 
@@ -619,12 +619,12 @@ Public Function Blocks(ByVal idx As Long, Optional ByVal landingFromAbove As Boo
 
 Answers whether an object stops a body that just touched it.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `idx` | The object id. |
 | `landingFromAbove` | True when the body is descending onto the top surface. |
 
-**Devolve.** True when the contact must be resolved.
+**Returns.** True when the contact must be resolved.
 
 ### GetOrientedBox
 
@@ -634,7 +634,7 @@ Public Sub GetOrientedBox(ByVal idx As Long, ByRef outCx As Single, ByRef outCy 
 
 Reads the oriented footprint of an object.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `idx` | The object id. |
 | `outCx` | Receives the centre X coordinate. |
@@ -653,13 +653,13 @@ Public Function ContainsXY(ByVal idx As Long, ByVal X As Single, ByVal Y As Sing
 
 Reports whether a point falls inside the real footprint of an object.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `idx` | The object id. |
 | `X` | The world X coordinate to test. |
 | `Y` | The world Y coordinate to test. |
 
-**Devolve.** True when the point is inside, taking rotation into account.
+**Returns.** True when the point is inside, taking rotation into account.
 
 > The bounds of a rotated box are the square that encloses it at any angle, so a point can be inside those bounds and well outside the box itself. Anything that decides what a body is standing on has to ask this rather than read the bounds.
 
@@ -671,14 +671,14 @@ Public Function QueryBox(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Sin
 
 Collects every active object whose bounds overlap a rectangle of the world.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `x1` | The lower X bound of the query. |
 | `y1` | The lower Y bound of the query. |
 | `x2` | The upper X bound of the query. |
 | `y2` | The upper Y bound of the query. |
 
-**Devolve.** How many objects were found; read them back through ResultAt.
+**Returns.** How many objects were found; read them back through ResultAt.
 
 > The results live in a reused array, so a second query overwrites the first.
 
@@ -690,13 +690,13 @@ Public Function QueryRadius(ByVal X As Single, ByVal Y As Single, ByVal radius A
 
 Collects every active object within a radius of a point.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `X` | The centre X coordinate. |
 | `Y` | The centre Y coordinate. |
 | `radius` | The search radius. |
 
-**Devolve.** How many objects were found.
+**Returns.** How many objects were found.
 
 ### ResultAt
 
@@ -706,11 +706,11 @@ Public Function ResultAt(ByVal slot As Long) As Long
 
 Reads one entry of the last query result.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `slot` | The position in the result list. |
 
-**Devolve.** The object id, or P_INVALID_ID when the slot is out of range.
+**Returns.** The object id, or P_INVALID_ID when the slot is out of range.
 
 ### ResultCount
 
@@ -720,7 +720,7 @@ Public Property Get ResultCount() As Long
 
 Reads how many objects the last query found.
 
-**Devolve.** The result count.
+**Returns.** The result count.
 
 ### DynamicCount
 
@@ -730,7 +730,7 @@ Public Property Get DynamicCount() As Long
 
 Reads how many objects are swept rather than looked up.
 
-**Devolve.** The count of objects that moved at least once, plus those too big to be worth indexing.
+**Returns.** The count of objects that moved at least once, plus those too big to be worth indexing.
 
 ### CellSize
 
@@ -740,7 +740,7 @@ Public Property Get CellSize() As Single
 
 Reads how wide one cell of the lookup grid is.
 
-**Devolve.** The cell size in world units, or zero when nothing is indexed.
+**Returns.** The cell size in world units, or zero when nothing is indexed.
 
 ### Render
 
@@ -750,11 +750,11 @@ Public Function Render(ByVal rd As PRenderer) As Long
 
 Draws the whole scene through a renderer, frustum culling, budget spending and painter ordering included.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `rd` | The renderer to draw with. |
 
-**Devolve.** How many objects were submitted.
+**Returns.** How many objects were submitted.
 
 Runs in three stages. The budget is spent nearest first, so whatever gets dropped is always the far background and never the wall in front of the player. The survivors are seeded farthest centre first, and then reordered by a real occlusion sort: for every pair that can be separated by an axis-aligned plane, the side the eye sits on decides which one has to be painted second. Guessing from a single depth number cannot do that, which is what makes a small object shine through a wide wall or a ground plane paint over everything standing on it.
 
@@ -766,7 +766,23 @@ Public Property Get DrawnCount() As Long
 
 Reads how many objects the last Render painted.
 
-**Devolve.** The count, which is what Render returned.
+**Returns.** The count, which is what Render returned.
+
+### WasReduced
+
+```vba
+Public Function WasReduced(ByVal slot As Long) As Boolean
+```
+
+Reports whether the object painted at a given position was drawn reduced.
+
+| parameter | what it is |
+|---|---|
+| `slot` | The position in the last frame. |
+
+**Returns.** True when only its most visible face was submitted.
+
+> Paired with DrawnAt so a test can see the level of detail decision, which is otherwise invisible: a box drawn with one face and a box drawn with three look identical from the front, and the difference only shows as a flicker when the choice changes between two almost identical frames.
 
 ### DrawnAt
 
@@ -776,11 +792,11 @@ Public Function DrawnAt(ByVal slot As Long) As Long
 
 Reads which object was painted at a given position of the last frame.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `slot` | The position, zero being the first thing painted and therefore the furthest back. |
 
-**Devolve.** The object id, or P_INVALID_ID when the slot is out of range.
+**Returns.** The object id, or P_INVALID_ID when the slot is out of range.
 
 > The order the painter's algorithm settled on, which is the one thing about a frame that cannot be checked by looking at the shapes afterwards. Reading it is how a test proves that a coin resting on a platform is painted before the platform when you are underneath it.
 
@@ -792,7 +808,7 @@ Public Sub DrawObject(ByVal rd As PRenderer, ByVal idx As Long, Optional ByVal r
 
 Draws a single object through a renderer.
 
-| parametro | o que e |
+| parameter | what it is |
 |---|---|
 | `rd` | The renderer to draw with. |
 | `idx` | The object id. |

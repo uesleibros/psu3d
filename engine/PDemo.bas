@@ -11,13 +11,51 @@ Option Explicit
 
 '/** @section Native declarations */
 
+'/**
+' * @description A point in screen pixels, which is the unit the cursor API speaks.
+' */
+Private Type POINTAPI
+    X As Long
+    Y As Long
+End Type
+
 #If VBA7 Then
     '/** @description Reports whether a key is down at this instant, independent of focus. */
     Private Declare PtrSafe Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As Integer
+
+    '/** @description Reads where the pointer is, in screen pixels. */
+    Private Declare PtrSafe Function GetCursorPos Lib "user32" (ByRef lpPoint As POINTAPI) As Long
+
+    '/** @description Warps the pointer, in screen pixels. */
+    Private Declare PtrSafe Function SetCursorPos Lib "user32" (ByVal X As Long, ByVal Y As Long) As Long
+
+    '/** @description Shows or hides the pointer. The count is internal, so every hide needs a show. */
+    Private Declare PtrSafe Function ShowCursor Lib "user32" (ByVal bShow As Long) As Long
+
+    '/** @description Reads a screen measurement, used here for the centre of the primary display. */
+    Private Declare PtrSafe Function GetSystemMetrics Lib "user32" (ByVal nIndex As Long) As Long
 #Else
     '/** @description Reports whether a key is down at this instant, independent of focus. */
     Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As Integer
+
+    '/** @description Reads where the pointer is, in screen pixels. */
+    Private Declare Function GetCursorPos Lib "user32" (ByRef lpPoint As POINTAPI) As Long
+
+    '/** @description Warps the pointer, in screen pixels. */
+    Private Declare Function SetCursorPos Lib "user32" (ByVal X As Long, ByVal Y As Long) As Long
+
+    '/** @description Shows or hides the pointer. The count is internal, so every hide needs a show. */
+    Private Declare Function ShowCursor Lib "user32" (ByVal bShow As Long) As Long
+
+    '/** @description Reads a screen measurement, used here for the centre of the primary display. */
+    Private Declare Function GetSystemMetrics Lib "user32" (ByVal nIndex As Long) As Long
 #End If
+
+'/** @description Index of the primary screen width in GetSystemMetrics. */
+Private Const SM_CXSCREEN As Long = 0
+
+'/** @description Index of the primary screen height in GetSystemMetrics. */
+Private Const SM_CYSCREEN As Long = 1
 
 '/** @section Tuning */
 
@@ -49,8 +87,8 @@ Private Const STEP_HEIGHT As Single = 0.45
 ' * means is a decision of the game, and this is where that decision is written down. */
 Private Const TAG_CHECKPOINT As Long = 1
 
-'/** @description Radians of rotation per point of mouse travel. */
-Private Const MOUSE_SENS As Single = 0.0026
+'/** @description Radians of rotation per pixel of pointer travel. */
+Private Const MOUSE_SENS As Single = 0.0022
 
 '/** @description Reach of the pickup test, measured from the centre of the body. */
 Private Const PICK_RADIUS As Single = 0.95
@@ -63,6 +101,9 @@ Private m_canvas As PCanvas
 Private m_rd As PRenderer
 
 Private m_body As PBody
+Private m_anchorX As Long
+Private m_anchorY As Long
+Private m_lookReady As Boolean
 Private m_eyeZ As Single
 Private m_map As Long
 Private m_levelPath As String
@@ -99,7 +140,7 @@ Private m_statText As String
 
 '/**
 ' * @brief Builds the test level and runs it on slide one until Escape is pressed or the show moves on.
-' * @remarks Meant to be launched from a running slide show, since UCursor maps the pointer against the show window.
+' * @remarks Meant to be launched from a running slide show. The pointer is warped back to a fixed anchor every frame, which is what relative mouse needs and is only reasonable while a show owns the screen.
 ' */
 Public Sub RunDemo()
     m_map = 0
@@ -212,8 +253,14 @@ Private Sub RunLevel()
     CountPickups
     SetupMiniView target.Shapes
 
-    UCursor.HideCursor True
-    UCursor.SetCurPos m_canvas.CenterX, m_canvas.CenterY
+    '/* The anchor is the middle of the primary screen. Nothing is measured against the slide, so
+    ' * letterboxing, DPI and windowed shows all stop being anyone's problem. */
+    m_anchorX = GetSystemMetrics(SM_CXSCREEN) \ 2
+    m_anchorY = GetSystemMetrics(SM_CYSCREEN) \ 2
+    m_lookReady = False
+
+    ShowCursor 0
+    SetCursorPos m_anchorX, m_anchorY
 
     t0 = Timer
     lastUndo = t0
@@ -277,7 +324,7 @@ Private Sub RunLevel()
         m_accEvents = m_accEvents + (PCore.Seconds() - tMark)
     Loop
 
-    UCursor.HideCursor False
+    ShowCursor 1
     ReleaseMiniView
     Psu3D.Shutdown
 
@@ -650,23 +697,34 @@ End Sub
 '/** @section Frame steps */
 
 '/**
-' * @brief Turns the camera from the mouse travel since the last frame and recentres the pointer.
-' * @remarks Reads through the canvas, so the same code works whatever rectangle of the slide the view occupies.
+' * @brief Turns the camera from the pointer travel since the last frame and warps the pointer back.
+' * @description Relative mouse without capturing the device: read where the pointer is, measure how far
+' * it went from a fixed anchor, then put it back on the anchor. Because the same anchor is used to read
+' * and to warp, its exact position never matters, only that it stays put, so the centre of the primary
+' * screen does the job without any conversion between screen pixels and slide points.
+' * @remarks The first frame only warps. Measuring on that one would turn the camera by however far the
+' * pointer happened to be from the anchor when the show started, which is a spin, not a look.
 ' */
 Private Sub UpdateLook()
+    Dim p As POINTAPI
     Dim dx As Single
     Dim dy As Single
 
-    '/* Direto do UCursor, porque a canvas nao le hardware. A conta e a mesma: a distancia do ponteiro
-    ' * ate o centro da canvas, em pontos do slide. */
-    dx = UCursor.CursorX - m_canvas.CenterX
-    dy = UCursor.CursorY - m_canvas.CenterY
+    GetCursorPos p
 
-    If dx <> 0! Or dy <> 0! Then
-        m_cam.AddAngles dx * MOUSE_SENS, -dy * MOUSE_SENS
-        UCursor.SetCurPos m_canvas.CenterX, m_canvas.CenterY
-        m_dirty = True
+    If m_lookReady Then
+        dx = CSng(p.X - m_anchorX)
+        dy = CSng(p.Y - m_anchorY)
+
+        If dx <> 0! Or dy <> 0! Then
+            m_cam.AddAngles dx * MOUSE_SENS, -dy * MOUSE_SENS
+            m_dirty = True
+        End If
+    Else
+        m_lookReady = True
     End If
+
+    SetCursorPos m_anchorX, m_anchorY
 End Sub
 
 '/**

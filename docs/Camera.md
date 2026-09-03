@@ -1,6 +1,6 @@
-# Câmera
+# Camera
 
-Posição no mundo mais duas rotações.
+A position in the world plus two rotations.
 
 ```vba
 Dim cam As PCamera
@@ -13,31 +13,31 @@ cam.AddAngles 0.02, -0.01
 cam.LookAt 0, 0, 0
 ```
 
-`Yaw` é para onde você está virado no plano do chão, em radianos. `Pitch` é o quanto está olhando para cima ou para baixo.
+`Yaw` is which way you face in the ground plane, in radians. `Pitch` is how far up or down you are looking.
 
-O pitch é limitado, e o limite é ajustável com `PitchLimit`. Sem limite você vira de cabeça para baixo e o yaw passa a girar ao contrário, que é desorientador e nunca é o que alguém quis.
+Pitch is limited, and the limit is adjustable through `PitchLimit`. Without a limit you go over the top and yaw starts turning the wrong way, which is disorienting and never what anybody wanted.
 
-O seno e o cosseno dos dois ângulos ficam guardados e só são recalculados quando o ângulo muda. Um frame lê `CosYaw` umas mil vezes, e chamar `Cos` mil vezes com o mesmo argumento é trabalho jogado fora.
+The sine and cosine of both angles are cached and recomputed only when the angle changes. A frame reads `CosYaw` about a thousand times, and calling `Cos` a thousand times with the same argument is work thrown away.
 
-## Direções
+## Directions
 
-`ForwardX` e `ForwardY` são para onde a câmera aponta no plano do chão. `RightX` e `RightY` são o lado direito dela. Juntos, viram movimento:
+`ForwardX` and `ForwardY` are where the camera points in the ground plane. `RightX` and `RightY` are its right hand side. Together they become movement:
 
 ```vba
-wishX = cam.ForwardX * frente + cam.RightX * lado
-wishY = cam.ForwardY * frente + cam.RightY * lado
+wishX = cam.ForwardX * fwd + cam.RightX * strafe
+wishY = cam.ForwardY * fwd + cam.RightY * strafe
 ```
 
-Repare que são só duas componentes. Andar não deve subir quando você olha para cima, então o vetor de frente é o achatado.
+Note there are only two components. Walking should not climb when you look up, so the forward vector is the flattened one.
 
-## Transformação
+## Transform
 
-`WorldToView` leva um ponto do mundo para o espaço da câmera, devolvendo frente, lado e cima. Essa é a matriz de view da lib, e está detalhada em [Como o 3D funciona](Como-o-3D-funciona.md).
+`WorldToView` takes a world point into camera space, giving back forward, side and up. That is the library's view matrix, and it is spelled out in [How the 3D works](How-The-3D-Works.md).
 
-`ViewDepth` devolve só a componente de profundidade, que é o que a ordenação usa. `SphereVisible` responde se uma esfera cabe no frustum.
+`ViewDepth` returns only the depth component, which is what the sorting uses. `SphereVisible` answers whether a sphere fits inside the frustum.
 
-Na prática nem o `PScene` nem o `PRenderer` chamam esses métodos no caminho quente: eles leem o seno, o cosseno e a posição uma vez por frame e escrevem a conta na mão, porque uma chamada de método por vértice é a coisa mais cara de um frame que é quase todo aritmética.
+In practice neither `PScene` nor `PRenderer` calls those on the hot path. They read the sine, the cosine and the position once per frame and write the arithmetic out inline, because a method call per vertex is the most expensive thing in a frame that is almost entirely arithmetic.
 
-## Balanço e coice
+## Bob and recoil
 
-`ScreenShiftY` desloca a imagem verticalmente depois da projeção. É para balanço de cabeça andando e para coice de arma. Não use isso para olhar para cima: para isso existe o pitch, que é rotação de verdade.
+`ScreenShiftY` offsets the image vertically after projection. It is for head bob while walking and for weapon recoil. Do not use it to look up: pitch is there for that, and pitch is a real rotation.
