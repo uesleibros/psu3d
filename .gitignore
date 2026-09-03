@@ -1,0 +1,12 @@
+# PowerPoint
+*.pptm
+*.ppt
+*.pptx
+~$*
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# empacotamento
+*.zip
