@@ -488,6 +488,11 @@ End Function
 ' * @param slideX The X coordinate in points.
 ' * @param slideY The Y coordinate in points.
 ' * @return True when the point is inside the drawable area.
+' * @remarks This is how a caller asks about a pointer. The canvas maps coordinates and never
+' * reads hardware: subtract CenterX and CenterY from whatever gives you a pointer position and you
+' * have the offset from the middle, which is what mouse look wants. There were CursorX, CursorY,
+' * CursorInside and CenterCursor here once. They were convenient, and they made every project that
+' * imported the core have to import a cursor module too, wanting a mouse or not.
 ' */
 Public Function Contains(ByVal slideX As Single, ByVal slideY As Single) As Boolean
     Contains = PCore.PointInBox(slideX, slideY, m_x, m_y, m_x + m_w, m_y + m_h)
@@ -515,38 +520,6 @@ End Sub
 Public Sub ToSlide(ByVal localX As Single, ByVal localY As Single, ByRef outX As Single, ByRef outY As Single)
     outX = localX + m_x
     outY = localY + m_y
-End Sub
-
-'/**
-' * @brief Reads the cursor X coordinate relative to the canvas.
-' * @return The local X coordinate in points, negative when the cursor sits to the left of the canvas.
-' * @remarks Backed by UCursor, so it stays correct under letterboxing, DPI scaling and windowed shows.
-' */
-Public Property Get CursorX() As Single
-    CursorX = UCursor.CursorX - m_x
-End Property
-
-'/**
-' * @brief Reads the cursor Y coordinate relative to the canvas.
-' * @return The local Y coordinate in points.
-' */
-Public Property Get CursorY() As Single
-    CursorY = UCursor.CursorY - m_y
-End Property
-
-'/**
-' * @brief Reports whether the cursor currently hovers the canvas.
-' * @return True when the pointer is inside the drawable area.
-' */
-Public Property Get CursorInside() As Boolean
-    CursorInside = Contains(UCursor.CursorX, UCursor.CursorY)
-End Property
-
-'/**
-' * @brief Warps the cursor to the centre of the canvas, the usual move for mouse look.
-' */
-Public Sub CenterCursor()
-    UCursor.SetCurPos m_centerX, m_centerY
 End Sub
 
 '/** @section Backdrop */

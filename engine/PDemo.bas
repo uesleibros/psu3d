@@ -213,7 +213,7 @@ Private Sub RunLevel()
     SetupMiniView target.Shapes
 
     UCursor.HideCursor True
-    m_canvas.CenterCursor
+    UCursor.SetCurPos m_canvas.CenterX, m_canvas.CenterY
 
     t0 = Timer
     lastUndo = t0
@@ -657,12 +657,14 @@ Private Sub UpdateLook()
     Dim dx As Single
     Dim dy As Single
 
-    dx = m_canvas.CursorX - m_canvas.HalfWidth
-    dy = m_canvas.CursorY - m_canvas.HalfHeight
+    '/* Direto do UCursor, porque a canvas nao le hardware. A conta e a mesma: a distancia do ponteiro
+    ' * ate o centro da canvas, em pontos do slide. */
+    dx = UCursor.CursorX - m_canvas.CenterX
+    dy = UCursor.CursorY - m_canvas.CenterY
 
     If dx <> 0! Or dy <> 0! Then
         m_cam.AddAngles dx * MOUSE_SENS, -dy * MOUSE_SENS
-        m_canvas.CenterCursor
+        UCursor.SetCurPos m_canvas.CenterX, m_canvas.CenterY
         m_dirty = True
     End If
 End Sub

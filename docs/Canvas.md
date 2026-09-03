@@ -63,13 +63,15 @@ Esse retângulo é uma shape chamada `p3dbg_<nome>`. O prefixo é diferente do `
 
 `ToLocal` e `ToSlide` convertem entre o espaço do canvas e o espaço do slide. `Contains` responde se um ponto do slide caiu dentro do canvas.
 
-O mouse vem por aqui:
+**A canvas não lê hardware.** Ela mapeia coordenadas, e nada mais. Quem tem um ponteiro faz a conta:
 
 ```vba
-dx = cv.CursorX - cv.HalfWidth
-dy = cv.CursorY - cv.HalfHeight
+dx = MeuCursorX - cv.CenterX
+dy = MeuCursorY - cv.CenterY
 cam.AddAngles dx * 0.0026, -dy * 0.0026
-cv.CenterCursor
+MoveMeuCursorPara cv.CenterX, cv.CenterY
 ```
 
-`CursorX` e `CursorY` são relativos ao canvas, não ao slide nem à tela, então o mesmo código funciona seja qual for o retângulo. `CenterCursor` devolve o ponteiro ao centro, que é como se faz mouse relativo sem captura. Isso depende do `UCursor`.
+`CenterX` e `CenterY` são o centro da canvas em pontos do slide, então a subtração dá a distância do ponteiro até o meio, que é exatamente o que mouse look quer. Recentralizar depois é o que faz mouse relativo sem captura.
+
+Existiram aqui um `CursorX`, um `CursorY`, um `CursorInside` e um `CenterCursor`. Eram convenientes, e faziam todo projeto que importasse o núcleo ter que importar um módulo de cursor junto, querendo mouse ou não. Foram removidos, e o núcleo passou a não depender de nada.

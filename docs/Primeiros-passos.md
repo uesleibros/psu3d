@@ -67,8 +67,8 @@ Public Sub Main()
         If dt > 0.05 Then dt = 0.05
         t0 = Timer
 
-        Psu3D.Camera.AddAngles UCursor.CursorX * 0.001, 0
-        Psu3D.Canvas.CenterCursor
+        Psu3D.Camera.AddAngles (UCursor.CursorX - Psu3D.Canvas.CenterX) * 0.0026, 0
+        UCursor.SetCurPos Psu3D.Canvas.CenterX, Psu3D.Canvas.CenterY
 
         Psu3D.BeginFrame dt
         Psu3D.RenderScene

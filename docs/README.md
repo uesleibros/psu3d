@@ -36,7 +36,7 @@ Os oito primeiros são o núcleo. `Psu3D` é conveniência. `PBody`, `PLevel`, `
 | `PSelfTest.bas` | autoteste da biblioteca | [Autoteste](Autoteste.md) |
 | `PDemo.bas` | fase jogável de exemplo | [Receitas](Receitas.md) |
 
-Nada de terceiros vem embutido. `PLevel` precisa de um parser de JSON, que está em [vbacollective/json](https://github.com/vbacollective/json). Mouse é opcional e sai por `UCursor`, que também não faz parte da lib. Os detalhes estão em [Instalação](Instalacao.md).
+Nada de terceiros vem embutido e **o núcleo não chama nada de fora**. `PLevel` precisa de um parser de JSON, que está em [vbacollective/json](https://github.com/vbacollective/json). O `PDemo` precisa de um módulo de cursor para o mouse. Os detalhes estão em [Instalação](Instalacao.md).
 
 ## As regras que a lib segue
 

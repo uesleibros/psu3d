@@ -1,5 +1,31 @@
 # Changelog
 
+## 1.0.1
+
+### O núcleo deixou de depender do UCursor
+
+`PCanvas` tinha quatro membros que chamavam um módulo de cursor externo: `CursorX`, `CursorY`, `CursorInside` e `CenterCursor`. Como o VBA compila o projeto inteiro, isso obrigava **todo** projeto que importasse o núcleo a importar um módulo de cursor junto, querendo mouse ou não. Era uma dependência de verdade, escondida atrás de quatro conveniências.
+
+Os quatro foram removidos. A canvas mapeia coordenadas e não lê hardware: quem tem um ponteiro subtrai `CenterX` e `CenterY`, que é a mesma conta e serve para qualquer fonte de posição.
+
+Agora só o `PDemo` menciona um módulo de cursor, porque é um demo em primeira pessoa. Os outros doze módulos compilam sozinhos.
+
+**Migração.** Se você usava algum dos quatro:
+
+| antes | agora |
+|---|---|
+| `cv.CursorX` | `MeuCursorX - cv.X` |
+| `cv.CursorY` | `MeuCursorY - cv.Y` |
+| `cv.CursorInside` | `cv.Contains(MeuCursorX, MeuCursorY)` |
+| `cv.CenterCursor` | `MoveCursorPara cv.CenterX, cv.CenterY` |
+
+E para mouse look, direto:
+
+```vba
+dx = MeuCursorX - cv.CenterX
+dy = MeuCursorY - cv.CenterY
+```
+
 ## 1.0.0
 
 Primeira versão pública.

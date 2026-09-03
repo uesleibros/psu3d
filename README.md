@@ -66,11 +66,11 @@ Psu3D não embute código de terceiros.
 
 `PLevel` precisa de um parser de JSON. Use o [vbacollective/json](https://github.com/vbacollective/json). Se você não vai ler fase de arquivo, não importe o `PLevel` e o assunto some.
 
-Mouse é opcional. Quatro membros do `PCanvas` e um do `PDemo` chamam um módulo `UCursor`, que não faz parte da lib. Sem ele, apague esses membros e o resto compila sozinho. Os detalhes estão em [Instalação](docs/Instalacao.md).
+Mouse é opcional e **nenhum módulo do núcleo o menciona**. Só o `PDemo` chama um módulo `UCursor`, porque é um demo em primeira pessoa. A canvas entrega `CenterX` e `CenterY` e quem tem um ponteiro faz a subtração, seja qual for a fonte. Os detalhes estão em [Instalação](docs/Instalacao.md).
 
 ## Documentação
 
-Tudo está em [`docs/`](docs/), e o mesmo conteúdo vai para a [wiki](https://github.com/uesleibros/psu3d/wiki): guias por assunto, como o 3D funciona por dentro, e a referência completa dos 346 membros públicos, gerada a partir dos docstrings do próprio código.
+Tudo está em [`docs/`](docs/), e o mesmo conteúdo vai para a [wiki](https://github.com/uesleibros/psu3d/wiki): guias por assunto, como o 3D funciona por dentro, e a referência completa dos 342 membros públicos, gerada a partir dos docstrings do próprio código.
 
 | página | assunto |
 |---|---|

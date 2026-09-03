@@ -64,10 +64,10 @@ Do While ActivePresentation.SlideShowWindow.View.CurrentShowPosition = 1
     If dt > 0.05 Then dt = 0.05
     t0 = Timer
 
-    dx = Psu3D.Canvas.CursorX - Psu3D.Canvas.HalfWidth
-    dy = Psu3D.Canvas.CursorY - Psu3D.Canvas.HalfHeight
+    dx = UCursor.CursorX - Psu3D.Canvas.CenterX
+    dy = UCursor.CursorY - Psu3D.Canvas.CenterY
     Psu3D.Camera.AddAngles dx * 0.0026, -dy * 0.0026
-    Psu3D.Canvas.CenterCursor
+    UCursor.SetCurPos Psu3D.Canvas.CenterX, Psu3D.Canvas.CenterY
 
     frente = 0: lado = 0
     If KeyDown(vbKeyW) Then frente = frente + 1
@@ -93,7 +93,7 @@ Do While ActivePresentation.SlideShowWindow.View.CurrentShowPosition = 1
 Loop
 ```
 
-Isso depende do `UCursor` para o mouse e de uma função `KeyDown` com `GetAsyncKeyState`. O `PDemo.bas` tem as duas prontas.
+O mouse aqui sai do `UCursor`, que não faz parte da lib: qualquer fonte de posição do ponteiro serve, porque a canvas só entrega `CenterX` e `CenterY`. O `KeyDown` com `GetAsyncKeyState` está pronto no `PDemo.bas`.
 
 ## Plataforma que vai e volta, com você em cima
 

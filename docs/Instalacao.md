@@ -40,7 +40,9 @@ Se você só quer desenhar 3D, oito módulos bastam:
 
 ## Módulos de fora
 
-Psu3D não embute código de terceiros. Dois módulos externos entram só se você usar a parte que os chama, e o VBA compila o projeto inteiro, então importar um módulo sem o que ele chama não compila.
+Psu3D não embute código de terceiros. O VBA compila o projeto inteiro, então importar um módulo sem o que ele chama não compila. Por isso o núcleo não chama nada de fora: os oito módulos do núcleo, mais o `Psu3D`, o `PBody` e o `PSelfTest`, compilam sozinhos.
+
+Sobram dois casos, e os dois são opcionais.
 
 ### JSON, para `PLevel`
 
@@ -52,20 +54,19 @@ Se você não vai ler nem escrever fase em arquivo, simplesmente não importe o 
 
 ### UCursor, para mouse
 
-Não faz parte da lib e não é obrigatório. É um módulo separado que mapeia o cursor contra a janela da apresentação, lidando com letterboxing, DPI e modo janela.
+Não faz parte da lib, não é obrigatório, e **nenhum módulo do núcleo o menciona**. Os doze módulos fora do `PDemo` compilam sem ele.
 
-Quem o chama é exatamente isto:
+O único que chama é o `PDemo.bas`, que é um demo em primeira pessoa e portanto precisa de mouse. Se você não vai rodar o demo, não importe o `PDemo` e o assunto some.
 
-| onde | membros |
-|---|---|
-| `PCanvas.cls` | `CursorX`, `CursorY`, `CursorInside`, `CenterCursor` |
-| `PDemo.bas` | `HideCursor` |
+A canvas mapeia coordenadas e não lê hardware. Quem tem um ponteiro subtrai `CenterX` e `CenterY` por conta própria, que é a mesma conta:
 
-Três caminhos, escolha um:
+```vba
+dx = MeuCursorX - cv.CenterX
+dy = MeuCursorY - cv.CenterY
+cam.AddAngles dx * 0.0026, -dy * 0.0026
+```
 
-1. **Vai capturar mouse.** Importe o `UCursor.bas` junto.
-2. **Não vai.** Apague os quatro membros de cursor do `PCanvas` e não importe o `PDemo`. O resto compila sozinho, e nada mais na lib depende deles.
-3. **Tem outro jeito de ler o cursor.** Troque as quatro linhas que chamam `UCursor` pelo seu. A conta de subtrair a posição do canvas continua valendo.
+Serve qualquer fonte de posição do ponteiro. O `UCursor` é uma delas, e resolve letterboxing, DPI e modo janela por você.
 
 ## Conferindo que deu certo
 

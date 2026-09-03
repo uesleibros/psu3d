@@ -20,7 +20,7 @@ Defines where on the slide a 3D view is drawn and how the world is projected int
 
 **Projection.** [`FieldOfView`](#fieldofview), [`FieldOfViewDeg`](#fieldofviewdeg), [`NearPlane`](#nearplane), [`FarPlane`](#farplane), [`FocalLength`](#focallength), [`TanFovH`](#tanfovh), [`TanFovV`](#tanfovv), [`NormH`](#normh), [`NormV`](#normv), [`Project`](#project)
 
-**Point queries.** [`Contains`](#contains), [`ToLocal`](#tolocal), [`ToSlide`](#toslide), [`CursorX`](#cursorx), [`CursorY`](#cursory), [`CursorInside`](#cursorinside), [`CenterCursor`](#centercursor)
+**Point queries.** [`Contains`](#contains), [`ToLocal`](#tolocal), [`ToSlide`](#toslide)
 
 **Backdrop.** [`BackColor`](#backcolor), [`BackVisible`](#backvisible), [`EnsureBackdrop`](#ensurebackdrop), [`LiftBackdrop`](#liftbackdrop), [`RemoveBackdrop`](#removebackdrop), [`BackdropName`](#backdropname)
 
@@ -447,6 +447,8 @@ Tests whether a slide point falls inside the canvas.
 
 **Devolve.** True when the point is inside the drawable area.
 
+> This is how a caller asks about a pointer. The canvas maps coordinates and never reads hardware: subtract CenterX and CenterY from whatever gives you a pointer position and you have the offset from the middle, which is what mouse look wants. There were CursorX, CursorY, CursorInside and CenterCursor here once. They were convenient, and they made every project that imported the core have to import a cursor module too, wanting a mouse or not.
+
 ### ToLocal
 
 ```vba
@@ -476,46 +478,6 @@ Converts canvas local coordinates back into slide coordinates.
 | `localY` | The local Y coordinate. |
 | `outX` | Receives the slide X coordinate. |
 | `outY` | Receives the slide Y coordinate. |
-
-### CursorX
-
-```vba
-Public Property Get CursorX() As Single
-```
-
-Reads the cursor X coordinate relative to the canvas.
-
-**Devolve.** The local X coordinate in points, negative when the cursor sits to the left of the canvas.
-
-> Backed by UCursor, so it stays correct under letterboxing, DPI scaling and windowed shows.
-
-### CursorY
-
-```vba
-Public Property Get CursorY() As Single
-```
-
-Reads the cursor Y coordinate relative to the canvas.
-
-**Devolve.** The local Y coordinate in points.
-
-### CursorInside
-
-```vba
-Public Property Get CursorInside() As Boolean
-```
-
-Reports whether the cursor currently hovers the canvas.
-
-**Devolve.** True when the pointer is inside the drawable area.
-
-### CenterCursor
-
-```vba
-Public Sub CenterCursor()
-```
-
-Warps the cursor to the centre of the canvas, the usual move for mouse look.
 
 ### BackColor
 
