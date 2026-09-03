@@ -52,7 +52,7 @@ sc.SetSpin disco, 1.15
 
 `SetMotion` faz a plataforma oscilar em senoide, o que a faz desacelerar nas pontas, que é o que permite subir nela de propósito. Chame `sc.UpdateMotion dt` uma vez por frame; ela devolve quantos objetos se mexeram, então quem só redesenha quando algo muda sabe quando redesenhar.
 
-Quem estava em cima vai junto. Veja [Corpo e física](Corpo-e-fisica#carona).
+Quem estava em cima vai junto. Veja [Corpo e física](Corpo-e-fisica.md#carona).
 
 ## Consultas
 
@@ -65,7 +65,7 @@ For k = 0 To n - 1
 Next k
 ```
 
-As consultas passam pelo [índice espacial](Indice-espacial), então continuam baratas com milhares de objetos.
+As consultas passam pelo [índice espacial](Indice-espacial.md), então continuam baratas com milhares de objetos.
 
 Para perguntar sobre um objeto específico:
 

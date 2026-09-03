@@ -8,7 +8,7 @@ Não existe profundidade por pixel. Polígonos inteiros são ordenados e pintado
 
 **Geometria que se interpenetra não tem ordem correta.** Duas caixas que se atravessam não têm "quem está na frente", e o melhor que a lib faz é escolher a ordem menos visível.
 
-Na prática, medindo contra um oráculo exato: 0,00 % de artefatos visíveis numa fase real, 1,01 % num cenário construído de propósito para ser hostil, e desses a maior parte é ciclo genuíno. Detalhe em [Ordenação por profundidade](Ordenacao-por-profundidade).
+Na prática, medindo contra um oráculo exato: 0,00 % de artefatos visíveis numa fase real, 1,01 % num cenário construído de propósito para ser hostil, e desses a maior parte é ciclo genuíno. Detalhe em [Ordenação por profundidade](Ordenacao-por-profundidade.md).
 
 Contorno prático: evite geometria que se atravessa. Encostada é fácil de ordenar, atravessada não é.
 

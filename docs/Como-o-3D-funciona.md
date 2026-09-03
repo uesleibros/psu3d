@@ -50,7 +50,7 @@ Duas coisas que um motor 3D completo tem e Psu3D não.
 
 Não há profundidade por pixel. Polígonos inteiros são ordenados e pintados de trás para frente, que é o algoritmo do pintor.
 
-A consequência concreta: **geometria que se interpenetra não tem ordem correta**, porque não existe "quem está na frente" para duas caixas que se atravessam. Foi por isso que a ordenação virou a parte mais difícil da lib, e por isso ela quebra ciclo em vez de resolver. Leia [Ordenação por profundidade](Ordenacao-por-profundidade).
+A consequência concreta: **geometria que se interpenetra não tem ordem correta**, porque não existe "quem está na frente" para duas caixas que se atravessam. Foi por isso que a ordenação virou a parte mais difícil da lib, e por isso ela quebra ciclo em vez de resolver. Leia [Ordenação por profundidade](Ordenacao-por-profundidade.md).
 
 Um Z buffer mataria isso em uma linha, e é impossível aqui pelo motivo seguinte.
 

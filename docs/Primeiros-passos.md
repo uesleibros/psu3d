@@ -82,7 +82,7 @@ Public Sub Main()
 End Sub
 ```
 
-A primeira coisa estranha é o `timerShp`. Ele não é um relógio. Escrever num WordArt é o que força o PowerPoint a repintar o slide durante uma apresentação, e o repintar é como o frame se torna visível. Leia [a bomba de refresh](Performance#a-bomba-de-refresh) antes de mexer nele.
+A primeira coisa estranha é o `timerShp`. Ele não é um relógio. Escrever num WordArt é o que força o PowerPoint a repintar o slide durante uma apresentação, e o repintar é como o frame se torna visível. Leia [a bomba de refresh](Performance.md#a-bomba-de-refresh) antes de mexer nele.
 
 A segunda é o `dt` limitado entre 1 ms e 50 ms. Um frame que demorou meio segundo, porque o Windows resolveu fazer outra coisa, moveria tudo meio segundo de uma vez e atravessaria parede. O limite superior transforma isso em câmera lenta, que é sempre preferível.
 
@@ -105,4 +105,4 @@ rd.Attach Shapes, cv, cam
 Set sc = New PScene
 ```
 
-E nada obriga a usar a cena. O renderer desenha primitiva direto, sem nada guardado. Veja [Renderer e primitivas](Renderer-e-primitivas).
+E nada obriga a usar a cena. O renderer desenha primitiva direto, sem nada guardado. Veja [Renderer e primitivas](Renderer-e-primitivas.md).

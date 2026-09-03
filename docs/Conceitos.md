@@ -53,7 +53,7 @@ Cor, se é sólido, se atravessa, atrito, quique, empuxo, se dá para escalar: t
 sc.SetMaterial ponte, quebradica
 ```
 
-Leia [Materiais](Materiais).
+Leia [Materiais](Materiais.md).
 
 ## O corpo reporta, não decide
 

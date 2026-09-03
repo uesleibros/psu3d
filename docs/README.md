@@ -8,13 +8,13 @@ Psu3D não é uma engine de jogo. É um motor 3D que serve para fazer jogo, do m
 
 | se você quer | vá para |
 |---|---|
-| pôr a lib no seu arquivo | [Instalação](Instalacao) |
-| ver alguma coisa na tela em 20 linhas | [Primeiros passos](Primeiros-passos) |
-| entender como as peças se encaixam | [Conceitos](Conceitos) |
-| saber se isso é 3D de verdade | [Como o 3D funciona](Como-o-3D-funciona) |
-| fazer um jogo | [Corpo e física](Corpo-e-fisica) |
-| escrever fase em arquivo | [Fases em JSON](Fases-em-JSON) |
-| a lista completa de tudo | [Referência da API](API-PCore) |
+| pôr a lib no seu arquivo | [Instalação](Instalacao.md) |
+| ver alguma coisa na tela em 20 linhas | [Primeiros passos](Primeiros-passos.md) |
+| entender como as peças se encaixam | [Conceitos](Conceitos.md) |
+| saber se isso é 3D de verdade | [Como o 3D funciona](Como-o-3D-funciona.md) |
+| fazer um jogo | [Corpo e física](Corpo-e-fisica.md) |
+| escrever fase em arquivo | [Fases em JSON](Fases-em-JSON.md) |
+| a lista completa de tudo | [Referência da API](API-PCore.md) |
 
 ## O mapa dos módulos
 
@@ -22,21 +22,21 @@ Os oito primeiros são o núcleo. `Psu3D` é conveniência. `PBody`, `PLevel`, `
 
 | módulo | o que faz | página |
 |---|---|---|
-| `PCore.bas` | tipos, enums, matemática, random determinístico, cor, relógio | [API](API-PCore) |
-| `PLighting.bas` | luz direcional e névoa global | [Luz e névoa](Luz-e-nevoa) |
-| `PMaterial.cls` | definição de uma superfície | [Materiais](Materiais) |
-| `PMaterials.bas` | registro de materiais e tabela de sombreamento | [Materiais](Materiais) |
-| `PCanvas.cls` | onde e como projetar | [Canvas](Canvas) |
-| `PCamera.cls` | olho, yaw, pitch | [Câmera](Camera) |
-| `PRenderer.cls` | pipeline de face e as primitivas | [Renderer e primitivas](Renderer-e-primitivas) |
-| `PScene.cls` | store de objetos, índice espacial, ordem de desenho | [Cena](Cena) |
-| `PBody.cls` | corpo que anda, colide, sobe degrau, escala, nada | [Corpo e física](Corpo-e-fisica) |
-| `PLevel.bas` | ler e escrever cena em JSON | [Fases em JSON](Fases-em-JSON) |
-| `Psu3D.bas` | fachada | [API](API-Psu3D) |
-| `PSelfTest.bas` | autoteste da biblioteca | [Autoteste](Autoteste) |
-| `PDemo.bas` | fase jogável de exemplo | [Receitas](Receitas) |
+| `PCore.bas` | tipos, enums, matemática, random determinístico, cor, relógio | [API](API-PCore.md) |
+| `PLighting.bas` | luz direcional e névoa global | [Luz e névoa](Luz-e-nevoa.md) |
+| `PMaterial.cls` | definição de uma superfície | [Materiais](Materiais.md) |
+| `PMaterials.bas` | registro de materiais e tabela de sombreamento | [Materiais](Materiais.md) |
+| `PCanvas.cls` | onde e como projetar | [Canvas](Canvas.md) |
+| `PCamera.cls` | olho, yaw, pitch | [Câmera](Camera.md) |
+| `PRenderer.cls` | pipeline de face e as primitivas | [Renderer e primitivas](Renderer-e-primitivas.md) |
+| `PScene.cls` | store de objetos, índice espacial, ordem de desenho | [Cena](Cena.md) |
+| `PBody.cls` | corpo que anda, colide, sobe degrau, escala, nada | [Corpo e física](Corpo-e-fisica.md) |
+| `PLevel.bas` | ler e escrever cena em JSON | [Fases em JSON](Fases-em-JSON.md) |
+| `Psu3D.bas` | fachada | [API](API-Psu3D.md) |
+| `PSelfTest.bas` | autoteste da biblioteca | [Autoteste](Autoteste.md) |
+| `PDemo.bas` | fase jogável de exemplo | [Receitas](Receitas.md) |
 
-Nada de terceiros vem embutido. `PLevel` precisa de um parser de JSON, que está em [vbacollective/json](https://github.com/vbacollective/json). Mouse é opcional e sai por `UCursor`, que também não faz parte da lib. Os detalhes estão em [Instalação](Instalacao).
+Nada de terceiros vem embutido. `PLevel` precisa de um parser de JSON, que está em [vbacollective/json](https://github.com/vbacollective/json). Mouse é opcional e sai por `UCursor`, que também não faz parte da lib. Os detalhes estão em [Instalação](Instalacao.md).
 
 ## As regras que a lib segue
 

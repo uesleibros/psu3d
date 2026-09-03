@@ -93,4 +93,4 @@ Sobe o número para comprar frame rate, desce para comprar silhueta.
 
 ## Índice espacial
 
-Consultas de física passam por uma grade uniforme. Veja [Índice espacial](Indice-espacial).
+Consultas de física passam por uma grade uniforme. Veja [Índice espacial](Indice-espacial.md).

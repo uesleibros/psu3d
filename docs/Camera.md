@@ -32,7 +32,7 @@ Repare que são só duas componentes. Andar não deve subir quando você olha pa
 
 ## Transformação
 
-`WorldToView` leva um ponto do mundo para o espaço da câmera, devolvendo frente, lado e cima. Essa é a matriz de view da lib, e está detalhada em [Como o 3D funciona](Como-o-3D-funciona).
+`WorldToView` leva um ponto do mundo para o espaço da câmera, devolvendo frente, lado e cima. Essa é a matriz de view da lib, e está detalhada em [Como o 3D funciona](Como-o-3D-funciona.md).
 
 `ViewDepth` devolve só a componente de profundidade, que é o que a ordenação usa. `SphereVisible` responde se uma esfera cabe no frustum.
 

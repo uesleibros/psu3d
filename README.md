@@ -66,22 +66,25 @@ Psu3D não embute código de terceiros.
 
 `PLevel` precisa de um parser de JSON. Use o [vbacollective/json](https://github.com/vbacollective/json). Se você não vai ler fase de arquivo, não importe o `PLevel` e o assunto some.
 
-Mouse é opcional. Quatro membros do `PCanvas` e um do `PDemo` chamam um módulo `UCursor`, que não faz parte da lib. Sem ele, apague esses membros e o resto compila sozinho. Os detalhes estão em [Instalação](https://github.com/uesleibros/psu3d/wiki/Instalacao).
+Mouse é opcional. Quatro membros do `PCanvas` e um do `PDemo` chamam um módulo `UCursor`, que não faz parte da lib. Sem ele, apague esses membros e o resto compila sozinho. Os detalhes estão em [Instalação](docs/Instalacao.md).
 
 ## Documentação
 
-A [wiki](https://github.com/uesleibros/psu3d/wiki) tem tudo: guias por assunto, como o 3D funciona por dentro, e a referência completa dos 346 membros públicos, gerada a partir dos docstrings do próprio código.
+Tudo está em [`docs/`](docs/), e o mesmo conteúdo vai para a [wiki](https://github.com/uesleibros/psu3d/wiki): guias por assunto, como o 3D funciona por dentro, e a referência completa dos 346 membros públicos, gerada a partir dos docstrings do próprio código.
 
 | página | assunto |
 |---|---|
-| [Primeiros passos](https://github.com/uesleibros/psu3d/wiki/Primeiros-passos) | ver algo na tela |
-| [Conceitos](https://github.com/uesleibros/psu3d/wiki/Conceitos) | como as peças se encaixam |
-| [Como o 3D funciona](https://github.com/uesleibros/psu3d/wiki/Como-o-3D-funciona) | é 3D de verdade, e onde está a fronteira |
-| [Corpo e física](https://github.com/uesleibros/psu3d/wiki/Corpo-e-fisica) | andar, pular, escalar, nadar, plataforma |
-| [Fases em JSON](https://github.com/uesleibros/psu3d/wiki/Fases-em-JSON) | o formato completo |
-| [Ordenação por profundidade](https://github.com/uesleibros/psu3d/wiki/Ordenacao-por-profundidade) | o algoritmo do pintor aqui dentro |
-| [Performance](https://github.com/uesleibros/psu3d/wiki/Performance) | a bomba de refresh, duplo buffer, orçamento |
-| [Limites conhecidos](https://github.com/uesleibros/psu3d/wiki/Limites-conhecidos) | o que a lib não faz, e por quê |
+| [Instalação](docs/Instalacao.md) | importar, e os dois módulos de fora |
+| [Primeiros passos](docs/Primeiros-passos.md) | ver algo na tela |
+| [Conceitos](docs/Conceitos.md) | como as peças se encaixam |
+| [Como o 3D funciona](docs/Como-o-3D-funciona.md) | é 3D de verdade, e onde está a fronteira |
+| [Corpo e física](docs/Corpo-e-fisica.md) | andar, pular, escalar, nadar, plataforma |
+| [Fases em JSON](docs/Fases-em-JSON.md) | o formato completo |
+| [Receitas](docs/Receitas.md) | exemplos prontos para copiar |
+| [Ordenação por profundidade](docs/Ordenacao-por-profundidade.md) | o algoritmo do pintor aqui dentro |
+| [Índice espacial](docs/Indice-espacial.md) | a grade que deixa a física barata |
+| [Performance](docs/Performance.md) | a bomba de refresh, duplo buffer, orçamento |
+| [Limites conhecidos](docs/Limites-conhecidos.md) | o que a lib não faz, e por quê |
 
 ## Exemplo pronto
 
