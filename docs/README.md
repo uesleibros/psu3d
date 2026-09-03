@@ -14,6 +14,9 @@ Psu3D is not a game engine. It is a 3D engine that games can be built on, in the
 | know whether this is real 3D | [How the 3D works](How-The-3D-Works.md) |
 | build a game | [Body and physics](Body-And-Physics.md) |
 | write levels as files | [Levels in JSON](Levels-In-JSON.md) |
+| copy a level and change it | [Examples](Examples.md) |
+| something is not working | [Troubleshooting](Troubleshooting.md) |
+| a quick answer | [FAQ](FAQ.md) |
 | the complete list of everything | [API reference](API-PCore.md) |
 
 ## The modules

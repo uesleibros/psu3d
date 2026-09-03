@@ -90,14 +90,26 @@ Everything is in [`docs/`](docs), and the same content is published to the [wiki
 | [Spatial index](docs/Spatial-Index.md) | the grid that keeps physics cheap |
 | [Performance](docs/Performance.md) | the refresh pump, double buffering, budget |
 | [Known limits](docs/Known-Limits.md) | what the library does not do, and why |
+| [Examples](docs/Examples.md) | the four level files, and what each one shows |
+| [Troubleshooting](docs/Troubleshooting.md) | nothing appears, it flickers, it will not compile |
+| [FAQ](docs/FAQ.md) | short answers |
 
-## Example level
+## Example levels
 
-[`examples/obby.json`](examples/obby.json) is a linear open air obstacle course: there is no ground, falling kills you and returns you to the last checkpoint. 38 objects, 5 checkpoints, moving platforms, spinning discs, ice, a trampoline, one way platforms and a lift.
+Four level files ship in [`examples/`](examples), each one plain JSON and editable in any text editor.
+
+| file | what it is for |
+|---|---|
+| [`minimal.json`](examples/minimal.json) | the smallest document that is still a level, to copy when starting your own |
+| [`pool.json`](examples/pool.json) | fluids: buoyancy, drag, swimming, diving, ladders out of the water |
+| [`showcase.json`](examples/showcase.json) | one of every material behaviour and every primitive |
+| [`obby.json`](examples/obby.json) | a linear open air obstacle course, and the level the depth sorting was tuned against |
 
 ```vba
-PDemo.RunFile "C:\path\obby.json"
+PDemo.RunFile "C:\path\psu3d\examples\showcase.json"
 ```
+
+`tools/check-level.py` validates a level against the schema and, using the physics the level itself declares, floods outwards from the spawn to find any surface that cannot be reached. A level that parses perfectly and cannot be finished is the mistake nothing else reports.
 
 ## The rules the library follows
 
@@ -116,6 +128,10 @@ Two things in the library can be wrong rather than merely slow, and both are mea
 **Depth sorting** is checked against an exact oracle that runs the separating axis test on the true oriented shapes, counting only pairs that actually overlap on screen: 0.00% visible artefacts on `obby.json` across 1,743 camera positions, and 1.01% on a scene built deliberately to be hostile, where the remainder is geometry that genuinely interpenetrates.
 
 **The spatial index** is compared against the full sweep it replaces across 120,000 random queries on scenes built out of what breaks grids: zero divergences.
+
+## Contributing
+
+See [CONTRIBUTING](CONTRIBUTING.md). The short version: no `On Error`, no COM on the hot path, and anything that can be wrong rather than merely slow has to come with a measurement.
 
 ## License
 

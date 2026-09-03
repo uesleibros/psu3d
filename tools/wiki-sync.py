@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
-"""Gera a copia do wiki a partir de docs/.
+"""Builds the wiki copy from docs/.
 
-A documentacao mora em docs/, onde os links apontam para arquivo .md e funcionam
-navegando o repositorio. O wiki do GitHub quer link por nome de pagina, sem .md,
-e quer a Home chamada Home.md. Este script faz essa traducao.
+The documentation lives in docs/, where links point at .md files so that they work
+while browsing the repository. A GitHub wiki wants links by page name, without the
+extension, and wants the index page called Home.md. This script does that translation.
 
-Uso:
+Usage:
 
     python tools/wiki-sync.py ../psu3d-wiki
 
-Depois, dentro da pasta de saida:
+Then, inside the output folder:
 
-    git add -A && git commit -m "atualiza wiki" && git push
+    git add -A && git commit -m "update wiki" && git push
 
-O repositorio do wiki so passa a existir depois que a primeira pagina e criada
-pela interface do GitHub, em Wiki e depois Create the first page. Uma vez.
+The wiki repository only comes into existence after the first page is created through
+the GitHub interface, under Wiki and then Create the first page. Once, by hand.
 """
 import io
 import os
@@ -29,37 +29,40 @@ SIDEBAR = """**Psu3D**
 
 [Home](Home)
 
-**Comecando**
+**Getting started**
 
-[Instalacao](Instalacao)
-[Primeiros passos](Primeiros-passos)
-[Conceitos](Conceitos)
-[Como o 3D funciona](Como-o-3D-funciona)
+[Installation](Installation)
+[Getting started](Getting-Started)
+[Concepts](Concepts)
+[How the 3D works](How-The-3D-Works)
 
-**Guias**
+**Guides**
 
 [Canvas](Canvas)
 [Camera](Camera)
-[Renderer e primitivas](Renderer-e-primitivas)
-[Cena](Cena)
-[Materiais](Materiais)
-[Luz e nevoa](Luz-e-nevoa)
-[Corpo e fisica](Corpo-e-fisica)
-[Fases em JSON](Fases-em-JSON)
+[Renderer and primitives](Renderer-And-Primitives)
+[Scene](Scene)
+[Materials](Materials)
+[Lighting and fog](Lighting-And-Fog)
+[Body and physics](Body-And-Physics)
+[Levels in JSON](Levels-In-JSON)
 
-**Por dentro**
+**Internals**
 
-[Ordenacao por profundidade](Ordenacao-por-profundidade)
-[Indice espacial](Indice-espacial)
+[Depth sorting](Depth-Sorting)
+[Spatial index](Spatial-Index)
 [Performance](Performance)
-[Limites conhecidos](Limites-conhecidos)
+[Known limits](Known-Limits)
 
-**Pratica**
+**Practice**
 
-[Receitas](Receitas)
-[Autoteste](Autoteste)
+[Recipes](Recipes)
+[Examples](Examples)
+[Self test](Self-Test)
+[Troubleshooting](Troubleshooting)
+[FAQ](FAQ)
 
-**Referencia**
+**Reference**
 
 [PCore](API-PCore)
 [PLighting](API-PLighting)
@@ -78,7 +81,7 @@ SIDEBAR = """**Psu3D**
 
 def main(out_dir):
     if not os.path.isdir(DOCS):
-        print("docs/ nao encontrado em", DOCS)
+        print("docs/ not found at", DOCS)
         return 1
 
     os.makedirs(out_dir, exist_ok=True)
@@ -88,10 +91,10 @@ def main(out_dir):
         name = os.path.basename(path)
         text = io.open(path, encoding="utf-8", newline="").read().replace("\r\n", "\n")
 
-        # link de arquivo vira link de pagina
+        # a file link becomes a page link
         text = re.sub(r"\]\((?!http)([A-Za-z0-9._-]+)\.md(#[^)]*)?\)",
                       lambda m: "](%s%s)" % (m.group(1), m.group(2) or ""), text)
-        # o indice do repositorio e a Home do wiki
+        # the repository index is the wiki Home
         text = text.replace("](README)", "](Home)")
 
         target = "Home.md" if name == "README.md" else name
@@ -99,7 +102,7 @@ def main(out_dir):
         written += 1
 
     io.open(os.path.join(out_dir, "_Sidebar.md"), "w", encoding="utf-8", newline="\n").write(SIDEBAR)
-    print("%d paginas escritas em %s" % (written + 1, out_dir))
+    print("%d pages written to %s" % (written + 1, out_dir))
     return 0
 
 

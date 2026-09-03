@@ -1,0 +1,27 @@
+{
+  "level": {
+    "spawn": [0, -6, 1.2],
+    "yaw": 90,
+    "budget": [40, 60],
+    "fog": [12, 40, "#A9C2D8"],
+    "light": [0.38, 0.42, 0.82],
+    "killz": -8,
+    "gravity": 18,
+    "jump": 6.4,
+    "walk": 5.4
+  },
+
+  "materials": {
+    "ground": { "color": "#6E9B5E" },
+    "block":  { "color": "#C8C8C8" },
+    "coin":   { "color": "#FACD3C", "collision": "trigger", "unlit": true, "twosided": true }
+  },
+
+  "objects": [
+    { "type": "box", "mat": "ground", "from": [-8, -8], "to": [8, 8], "top": 1, "thick": 1 },
+
+    { "type": "box", "mat": "block", "from": [-1.5, 1], "to": [1.5, 3], "top": 1.9, "thick": 0.9 },
+
+    { "type": "spin", "mat": "coin", "at": [0, 2, 2.6], "radius": 0.32 }
+  ]
+}
